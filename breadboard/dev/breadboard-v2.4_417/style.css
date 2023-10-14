@@ -1,0 +1,41 @@
+circle[gameStep=recaptcha] {
+    fill: #140944;
+}
+circle[gameStep=verification] {
+    fill: #3f0971;
+}
+circle[gameStep=tutorial] {
+    fill: #531191;
+}
+circle[gameStep=grouping] {
+    fill: #551ec1;
+}
+circle[gameStep=tutorial2] {
+    fill: #692ae8;
+}
+circle[gameStep=cheaptalk] {
+    fill: #372ae8;
+}
+circle[gameStep=survey] {
+    fill: #2a50e8;
+}
+circle[gameStep=game] {
+    fill: #2A82E8;
+}
+circle[gameStep=end] {
+    fill: #2EC6FF;
+}
+circle[gameStep=end][finished=true] {
+    fill: #ffcd37;
+}
+
+circle[gameStep=failedCaptcha],
+circle[gameStep=failedEvaluation],
+circle[gameStep=failedConsent],
+circle[gameStep=failCheckUnderstanding],
+circle[gameStep=notReady],
+circle[gameStep=leftover],
+circle[gameStep=reported]
+{
+    fill: #737373;
+}
