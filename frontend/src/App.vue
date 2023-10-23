@@ -1,47 +1,31 @@
+<!-- Main app -->
 <template>
   <v-app id="app">
-    <v-app-bar
-      dense
-      app
-      :class="
-        player.neighborNodes && player.neighborNodes.length > 0
-          ? 'no-shadow'
-          : ''
-      "
-    >
+    <!-- Top bar -->
+    <v-app-bar dense app :class="player.neighborNodes && player.neighborNodes.length > 0
+      ? 'no-shadow'
+      : ''
+      ">
       <v-spacer />
       <v-app-bar-title>Communication Task</v-app-bar-title>
       <v-spacer />
     </v-app-bar>
-    <div
-      id="partnerList"
-      v-if="
-        player.displayNeighborNodes &&
-        player.neighborNodes &&
-        player.neighborNodes.length > 0
-      "
-    >
-      <span v-if="player.neighborNodes[0].groupId != player.groupId"
-        >Your partner is from a different group</span
-      >
-      <span v-if="player.neighborNodes[0].groupId == player.groupId"
-        >Your partner is from the same group</span
-      >
-      <!-- <div class="player-container">
-          <div class="player-icon" :class="`group${player.groupId}`"></div>
-          Me
-        </div>
-        <div class="player-container" v-for="neighbor in player.neighborNodes" :key="neighbor.chatId">
-          <div class="player-icon" :class="`group${neighbor.groupId}`"></div>
-          Partner
-        </div> -->
+    <div id="partnerList" v-if="player.displayNeighborNodes &&
+      player.neighborNodes &&
+      player.neighborNodes.length > 0
+      ">
+      <span v-if="player.neighborNodes[0].groupId != player.groupId">Your partner is from a different group</span>
+      <span v-if="player.neighborNodes[0].groupId == player.groupId">Your partner is from the same group</span>
     </div>
     <v-main v-if="!browserCompatible">
       <h2 class="pa-10 text-center">
         Your browser is incompatible. Please return this HIT.
       </h2>
     </v-main>
+
+    <!-- Main app -->
     <v-main :class="mainClass" v-else-if="browserCompatible">
+      <!-- Experiment progress -->
       <v-progress-linear v-if="loading" indeterminate />
       <PlayerTimers :player="player" v-if="loading === false" />
       <v-col :class="displaySec1Progress" cols="10" md="6">
@@ -90,230 +74,67 @@
           </div>
         </div>
       </v-col>
-      <RecaptchaStep
-        v-if="player.gameStep === 'recaptcha' && loading === false"
-        :player="player"
-      />
-      <ConsentStep
-        v-if="player.gameStep === 'consent' && loading === false"
-        :player="player"
-      />
-      <PreEvalStep
-        v-if="player.gameStep === 'verification' && loading === false"
-        :player="player"
-        :nlp="nlp"
-      />
-      <TutorialStep
-        v-if="player.gameStep === 'tutorial' && loading === false"
-        :player="player"
-      />
-      <GroupingStep
-        v-if="player.gameStep === 'grouping' && loading === false"
-        :player="player"
-      />
-      <Tutorial2Step
-        v-if="player.gameStep === 'tutorial2' && loading === false"
-        :player="player"
-      />
-      <CheapTalkStep
-        v-if="player.gameStep === 'cheaptalk' && loading === false"
-        :player="player"
-        :nlp="nlp"
-      />
-      <GameStep
-        v-if="player.gameStep === 'game' && loading === false"
-        :player="player"
-      />
-      <SurveyStep
-        v-if="player.gameStep === 'survey' && loading === false"
-        :player="player"
-      />
-      <PartnerAnswerStep
-        v-if="player.gameStep === 'partnerAnswer' && loading === false"
-        :player="player"
-      />
-      <EndStep
-        v-if="player.gameStep === 'end' && loading === false"
-        :player="player"
-      />
-      <ReturnStep
-        v-else-if="
-          player.gameStep === 'failedCaptcha' ||
-          player.gameStep === 'failedConsent' ||
-          player.gameStep === 'leftover' ||
-          player.gameStep === 'reported' ||
-          player.gameStep == 'notReady' ||
-          player.gameStep == 'tooLate' ||
-          player.gameStep == 'failedEvaluation' ||
-          player.gameStep == 'timeout' ||
-          player.gameStep == 'failCheckUnderstanding'
-        "
-        :player="player"
-      />
+
+      <!-- Experiment steps -->
+      <RecaptchaStep v-if="player.gameStep === 'recaptcha' && loading === false" :player="player" />
+      <ConsentStep v-if="player.gameStep === 'consent' && loading === false" :player="player" />
+      <PreEvalStep v-if="player.gameStep === 'preEval' && loading === false" :player="player" :nlp="nlp" />
+      <TutorialStep v-if="player.gameStep === 'tutorial' && loading === false" :player="player" />
+      <GroupingStep v-if="player.gameStep === 'grouping' && loading === false" :player="player" />
+      <Tutorial2Step v-if="player.gameStep === 'tutorial2' && loading === false" :player="player" />
+      <CheapTalkStep v-if="player.gameStep === 'mainChat' && loading === false" :player="player" :nlp="nlp" />
+      <CooperationStep v-if="player.gameStep === 'game' && loading === false" :player="player" />
+      <SurveyStep v-if="player.gameStep === 'survey' && loading === false" :player="player" />
+      <PartnerAnswerStep v-if="player.gameStep === 'gradePartnerAnswer' && loading === false" :player="player" />
+      <EndStep v-if="player.gameStep === 'end' && loading === false" :player="player" />
+      <ReturnStep v-else-if="player.gameStep === 'failedCaptcha' ||
+        player.gameStep === 'failedConsent' ||
+        player.gameStep === 'leftover' ||
+        player.gameStep === 'reported' ||
+        player.gameStep == 'notReady' ||
+        player.gameStep == 'tooLate' ||
+        player.gameStep == 'failedEvaluation' ||
+        player.gameStep == 'timeout' ||
+        player.gameStep == 'failCheckUnderstanding'
+        " :player="player" />
     </v-main>
   </v-app>
 </template>
 
 <script>
 /* global Breadboard */
-import RecaptchaStep from './steps/Recaptcha.vue';
-import ConsentStep from './steps/Consent.vue';
-import PreEvalStep from './steps/PreEval.vue';
-// import Consent from "./steps/Consent.vue";
-import TutorialStep from './steps/Tutorial.vue';
-import GroupingStep from './steps/Grouping.vue';
-import Tutorial2Step from './steps/Tutorial2.vue';
-import CheapTalkStep from './steps/CheapTalk.vue';
-import GameStep from './steps/CooperationGame.vue';
-import SurveyStep from './steps/Survey.vue';
-import PartnerAnswerStep from './steps/PartnerAnswer.vue';
-import EndStep from './steps/End.vue';
-import ReturnStep from './steps/Return';
+
+// Experiment steps
+import RecaptchaStep from './steps/onboarding/Recaptcha.vue';
+import ConsentStep from './steps/onboarding/Consent.vue';
+import PreEvalStep from './steps/onboarding/PreEval.vue';
+import TutorialStep from './steps/onboarding/Tutorial.vue';
+import GroupingStep from './steps/onboarding/Grouping.vue';
+import Tutorial2Step from './steps/onboarding/Tutorial2.vue';
+
+import CheapTalkStep from './steps/main_task/CheapTalk.vue';
+import CooperationStep from './steps/main_task/CooperationDecision.vue';
+
+import SurveyStep from './steps/final/Survey.vue';
+import PartnerAnswerStep from './steps/final/PartnerAnswer.vue';
+import EndStep from './steps/final/End.vue';
+import ReturnStep from './steps/final/Return.vue';
+
+// External imports
 import { PlayerTimers } from '@human-nature-lab/breadboard-client';
 
-window.texts = {
-  INSTALL:
-    'Copy this object to frontend/App.vue, it is automatically read by Breadboard',
-
-  messagesEvaluation: [
-    [
-      'How many times in the last year did you suffer a fatal heart attack?',
-      'Thank you. Next, please enter the name of this HIT.',
-      'Lastly, why did we ask you the first question?',
-    ],
-    [
-      'How many times in the last year did you suffer a fatal heart attack?',
-      'Thank you. Next, please enter the name of this HIT.',
-      'Lastly, please enter this text exactly: "I&nbsp;am&nbsp;comfortable&nbsp;beginning&nbsp;this&nbsp;task."',
-    ],
-    [
-      "Hey, how's it going?",
-      "I'm doing well myself. First of all, I think the fear around AI's capabilities is overblown.",
-      "Instead of being fearful, I actually think it's cool that AI can help edit photos and text to make them look better to us. What do you think?",
-      'Why do you feel that way?',
-      "I see. People are so afraid that AI has all these problems like replacing human jobs and creating unrealistic beauty standards but I think that's always been happening. Nothing new.",
-      "I do understand that the speed and scale of AI's effect on society is different than before. It's definitely messed up that you can't tell whether something is real or not.",
-      "It's especially bad that ChatGPT straight up lies to people sometimes.",
-      "Anyways, I'm hopeful we can figure out as a society how to fix AI's problems. It was nice chatting with you!",
-    ],
-  ],
-  surveyPairs: [
-    [
-      'Global warming is a fact',
-      'There is too much conflicting evidence about climate change to know whether it is actually happening',
-    ],
-    [
-      'Global warming is mostly caused by human activities',
-      'Global warming is a naturally occurring phenomenon',
-    ],
-    [
-      'I am very worried about global warming',
-      'The media is often too alarmist about issues like global warming',
-    ],
-    [
-      'Utilities should be required to produce renewable energy even if it raises costs',
-      'The US should expand natural gas drilling to create jobs and reduce costs',
-    ],
-    [
-      'People should make changes like recycling and reducing meat consumption to help the climate',
-      'Personal life changes will never be enough to solve global warming',
-    ],
-    [
-      'At some point, all cars will be electric',
-      'Electric cars can be worse for the planet than gas cars',
-    ],
-  ],
-  likertQuestions: [
-    'I would want my kids to be taught evolution as a fact of biology',
-    'My second amendment right to bear arms should be protected',
-    'I support funding the military',
-    'Our children are being indoctrinated at school with LGBT messaging',
-    'I would pay higher taxes to support climate change research',
-    'Restrictions to stop the spread of COVID-19 went too far',
-    'I want stricter immigration requirements into the U.S.',
-  ],
-  customExamples: [
-    'David Campbell, a teacher in Orange Park, FL admitted to teaching inaccurate simplifications about evolution as long as he could convince religious students that evolution is real. What do you think about this story?',
-    'The parents of a Michigan gunman who killed four high school students in 2021 are now being tried for involuntary manslaughter because they purchased the weapon for their son. What do you think about this story?',
-    'Lockheed Martin, which has spent the past 20 years developing a new F-35 fighter jet, is projected to receive over 1.7 trillion dollars for aircraft that continue to malfunction and face delays. Some believe it will never be ready to fly. What are your reactions to hearing this?',
-    'People are outraged at the finding that public schools in New York City have spent over $200,000 doing drag queen story hours which have been suspected of “grooming” children. What are your reactions to recent stories like these?',
-    'In response to the U.S. government continuing to increase restrictions on fossil fuel use, former Energy Secretary Rick Perry has released a statement saying that these skyrocketing energy prices are "killing America." What do you think?',
-    'Regarding the U.S\'. response to the COVID-19 pandemic, Supreme Court Justice Neil Gorsuch said we "experienced the greatest intrusions on civil liberties in the peacetime history of this country." Do you think COVID-19 restrictions went too far?',
-    'Representative Elise Stefanik has stated that the U.S. is "sacrificing America\'s children\'s safety and happiness to prioritize the needs of illegals" referring to the influx of migrants into New York City. Do you share this opinion?',
-  ],
-  customExampleSources: [
-    'https://www.nytimes.com/2008/08/24/education/24evolution.html',
-    'https://www.nbcnews.com/news/us-news/oxford-michigan-school-shooters-parents-will-stand-trial-rcna76357',
-    'https://www.nytimes.com/2019/08/21/magazine/f35-joint-strike-fighter-program.html',
-    'https://www.ny1.com/nyc/all-boroughs/education/2022/06/16/queens-councilmember-calls-drag-queen-story-hours-in-schools--grooming-',
-    'https://www.foxnews.com/media/democrats-killing-america-rick-perry',
-    'https://www.foxnews.com/politics/gorsuch-gives-scathing-overview-covid-era-fear-desire-safety-powerful-forces',
-    'https://www.foxnews.com/politics/ny-house-republicans-blast-dems-states-migrant-crisis-packing-school-gyms-absolutely-unacceptable',
-  ],
-  customPrompts: [
-    'Now, exchange your opinions on the way evolution should be taught in schools. Would you want your kids learning it?',
-    'Now, exchange your opinions on the degree that gun rights should be protected or abolished.',
-    'Now, exchange your opinions on how much the military should be funded. How much of your tax dollars would you be willing to provide?',
-    'Now, exchange your opinions on the inclusion of gay and transgender stories in public schools. How would you feel if your children had access to these?',
-    'Now, exchange your feelings about the severity of global warming.',
-    'Now, exchange your opinions on the way the COVID-19 pandemic was handled.',
-    'Now, discuss how you feel immigration affects society.',
-  ],
-  customFollowups: [
-    'Should teachers be punished for choosing to teach creationism as an alternative explanation?',
-    'What do you think decreasing access to guns will do to society?',
-    "Is there meaning to having the strongest military if it doesn't get involved in world conflicts?",
-    'Should teachers and books in public schools be banned from discussing sexuality and gender?',
-    'How much can economic prosperity be sacrificed to prevent climate change?',
-    'Do you think the CDC is a trustworthy source of information?',
-    'How would your opinions change if immigrants were given more social support services like food stamps and medicare?',
-  ],
-  suggestions: {
-    greeting: ['How are you doing?', "I'm good, and you?"],
-    active_listen1: ['I hear you', 'I understand what you mean'],
-    active_listen2: ['I see!', 'Gotcha!'],
-    gratitude: ['Thank you for sharing!', 'Thanks for your input'],
-    farewell: [
-      'I appreciate you chatting with me!',
-      "You've been a great partner",
-    ],
-    express_interest: [
-      'What do you think?',
-      'Is there anything else you could say about this topic?',
-    ],
-    anger_management: [
-      "Apologies for the negativity. Let's do the best we can at this task!",
-      "Yeah, we're a team",
-    ],
-    encouragement: [
-      "I think it's better if we keep chatting, What do you want to talk about next?",
-      "Sorry for being quiet, I'm still here!",
-    ],
-  },
-  botSuggestions: {
-    greeting: 'Hi, how are you both doing?',
-    anger_management:
-      'Hi everyone, remember that our task is to understand each other. Do you mind trying to resolve your conflicts?',
-    encouragement:
-      "Thanks for your participation so far. It's better if we keep chatting. What do you wanna talk about next?",
-    farewell:
-      "I appreciate your participation in this chat! You've both been great. See ya!",
-  },
-};
-
 export default {
-  name: 'App',
+  name: 'Experiment_Platform',
   components: {
     PlayerTimers,
     RecaptchaStep,
     ConsentStep,
     PreEvalStep,
-    // ConsentStep,
     TutorialStep,
     GroupingStep,
     Tutorial2Step,
     CheapTalkStep,
-    GameStep,
+    CooperationStep,
     SurveyStep,
     PartnerAnswerStep,
     EndStep,
@@ -345,59 +166,66 @@ export default {
 
   methods: {
     connectToNLP() {
+      // Establish a separate connection with an NLP server that analyzes message content
+
       if (this.player.nlpPort === undefined) {
         return;
       }
 
-      let suggestionURL = '';
+      let nlpServerURL = '';
       if (window.location.protocol === 'http:') {
-        suggestionURL =
+        nlpServerURL =
           'ws://' + window.location.hostname + ':' + this.player.nlpPort;
       } else {
-        suggestionURL =
+        nlpServerURL =
           'wss://' + window.location.hostname + ':' + this.player.nlpPort;
       }
 
-      window.suggestionBox = new WebSocket(suggestionURL);
+      window.nlpServer = new WebSocket(nlpServerURL);
 
-      window.suggestionBox.onopen = () => {
+      window.nlpServer.onopen = () => {
+        // Yay! Successful connection
         this.connectedToNLP = true;
 
+        // Occassionally ping the server to prevent the connection from closing
         window.nlpInterval = setInterval(() => {
-          if (window.suggestionBox instanceof WebSocket) {
-            window.suggestionBox.send('{"command": "ping"}');
+          if (window.nlpServer instanceof WebSocket) {
+            window.nlpServer.send('{"command": "ping"}');
           } else {
             clearInterval(window.nlpInterval);
           }
         }, 20000);
 
-        if (this.player.gameStep == 'cheaptalk') {
+        // Register the participant's ID and their partner's ID with the server
+        if (this.player.gameStep == 'mainChat') {
           let req = {
             command: 'createPair',
             id1: this.player.chatId,
             id2: this.player.neighborNodes[0].chatId,
             mode: this.player.interventionMode,
           };
-          window.suggestionBox.send(JSON.stringify(req));
+          window.nlpServer.send(JSON.stringify(req));
         } else {
           let req = {
             command: 'registerParticipant',
             id: this.player.chatId,
           };
-          window.suggestionBox.send(JSON.stringify(req));
+          window.nlpServer.send(JSON.stringify(req));
         }
       };
 
-      window.suggestionBox.onclose = () => {
+      window.nlpServer.onclose = () => {
         this.connectedToNLP = false;
-        this.connectToNLP();
+        this.connectToNLP(); // Automatically reconnect
       };
 
-      window.suggestionBox.onmessage = (event) => {
+      window.nlpServer.onmessage = (event) => {
+        // We received a message from the NLP server
         // Reply is in event.data
         let nlpReply = JSON.parse(event.data);
 
         if (nlpReply.suggestion) {
+          // The message is a reply suggestion
           // Just in case
           if (!('id' in nlpReply)) {
             nlpReply.id = '';
@@ -406,6 +234,7 @@ export default {
           window.Breadboard.send('receiveSuggestion', { id: nlpReply.id });
           this.nlp = nlpReply;
         } else if (nlpReply.reply) {
+          // The message is a chatbot reply
           // Just in case
           if (!('id' in nlpReply)) {
             nlpReply.id = '';
@@ -417,24 +246,20 @@ export default {
           });
           this.nlp = nlpReply;
         } else if (nlpReply.score) {
+          // The messages is the language style evaluation score of the participant
           window.Breadboard.send('evalScore', { score: nlpReply.score });
         }
       };
     },
 
     updatePlayer(player) {
+      // Breadboard function that runs when a participant's attributes are updated
       if (this.loading) {
         this.playerState = player.gameStep;
         this.loading = false;
 
         // Register the prolific ID when they join
         if (player.gameStep == 'recaptcha') {
-          console.log('Registering prolific:');
-          console.log({
-            prolificId: window.prolificId,
-            studyId: window.studyId,
-            sessionId: window.sessionId,
-          });
           Breadboard.send('registerProlific', {
             prolificId: window.prolificId,
             studyId: window.studyId,
@@ -448,33 +273,27 @@ export default {
         this.player.readyToScoreEvaluation == false &&
         player.readyToScoreEvaluation == true
       ) {
+        // This participant is now ready to be scored, send a message to the NLP server
         let req = {
           command: 'scoreEvaluation',
           id: this.player.chatId,
           msgs: this.player.messagesEvaluation,
         };
 
-        if (window.suggestionBox) {
-          window.suggestionBox.send(JSON.stringify(req));
+        if (window.nlpServer) {
+          window.nlpServer.send(JSON.stringify(req));
         }
       }
 
       this.player = player;
-      // Connect to suggested reply server
-      if (!window.suggestionBox) {
-        this.connectToNLP();
-      } else {
-        this.connectedToNLP = true;
-      }
 
-      // Handle player step change
       if (this.playerState != player.gameStep) {
+        // Handle experiment step change
         if (
-          player.gameStep == 'cheaptalk' &&
+          player.gameStep == 'mainChat' &&
           player.interventionMode != 'none'
         ) {
-          // Register partner with suggestionBox
-          console.log('creating pair in nlp');
+          // Register partner with NLP server
           let req = {
             command: 'createPair',
             id1: this.player.chatId,
@@ -482,9 +301,8 @@ export default {
             mode: this.player.interventionMode,
           };
           let inter = setInterval(() => {
-            if (window.suggestionBox instanceof WebSocket) {
-              window.suggestionBox.send(JSON.stringify(req));
-              console.log('Registering pair with suggestionBox...');
+            if (window.nlpServer instanceof WebSocket) {
+              window.nlpServer.send(JSON.stringify(req));
               clearInterval(inter);
             }
           }, 200);
@@ -500,8 +318,8 @@ export default {
       return Promise && 'any' in Promise;
     },
     mainClass() {
+      // Conditional UI styles according to experiment step and NLP server connection status
       let cls = '';
-
       if (!this.connectedToNLP) {
         if (!(this.player && this.player.interventionMode == 'none')) {
           cls += 'notConnected ';
@@ -513,9 +331,10 @@ export default {
       return cls;
     },
     displaySec1Progress() {
+      // Display progress bar for experiment stage 1
       let thisClass = 'progress-top center mt-4';
       if (
-        !['tutorial', 'consent', 'verification', 'grouping'].includes(
+        !['tutorial', 'consent', 'preEval', 'grouping'].includes(
           this.player.gameStep
         )
       ) {
@@ -524,47 +343,59 @@ export default {
       return thisClass;
     },
     displaySec2Progress() {
+      // Display progress bar for experiment stage 3
       let thisClass = 'progress-top center';
-      if (!['cheaptalk', 'game', 'survey'].includes(this.player.gameStep)) {
+      if (!['mainChat', 'game', 'survey'].includes(this.player.gameStep)) {
         thisClass = 'd-none';
       }
       return thisClass;
     },
     pi1() {
+      // Conditional styling for progress bar item (stage 1)
       return this.player.gameStep == 'tutorial' ||
         this.player.gameStep == 'consent'
         ? 'active progress-itm'
         : 'progress-itm';
     },
     pi2() {
-      return this.player.gameStep == 'verification'
+      // Conditional styling for progress bar item (stage 1)
+      return this.player.gameStep == 'preEval'
         ? 'active progress-itm'
         : 'progress-itm';
     },
     pi3() {
+      // Conditional styling for progress bar item (stage 1)
       return this.player.gameStep == 'grouping'
         ? 'active progress-itm'
         : 'progress-itm';
     },
     mi1() {
-      return this.player.gameStep == 'cheaptalk' ||
+      // Conditional styling for progress bar item (stage 3)
+      return this.player.gameStep == 'mainChat' ||
         this.player.gameStep == 'consent'
         ? 'active progress-itm'
         : 'progress-itm';
     },
     mi2() {
+      // Conditional styling for progress bar item (stage 3)
       return this.player.gameStep == 'survey' ||
         this.player.gameStep == 'consent'
         ? 'active progress-itm'
         : 'progress-itm';
     },
     mi3() {
+      // Conditional styling for progress bar item (stage 3)
       return this.player.gameStep == 'game' || this.player.gameStep == 'consent'
         ? 'active progress-itm'
         : 'progress-itm';
     },
   },
   mounted() {
+    // Load variables from json file (shared with Breadboard and NLP server)
+    const texts = require("@/assets/texts.json");
+    window.texts = texts;
+
+    // Load external scripts
     let srcs = ['https://use.fontawesome.com/releases/v5.15.4/js/all.js'];
     srcs.forEach((script) => {
       let tag = document.createElement('script');
@@ -572,6 +403,13 @@ export default {
       tag.setAttribute('defer', 'defer');
       document.head.appendChild(tag);
     });
+
+    // Connect to the NLP server
+    if (!window.nlpServer) {
+      this.connectToNLP();
+    } else {
+      this.connectedToNLP = true;
+    }
   },
 };
 </script>
@@ -585,16 +423,19 @@ export default {
   --theme-accent: #ffad7d;
   --theme-accent2: #34b3b2;
 }
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,400;0,600;1,400&family=Quicksand:wght@300;400;600&family=Roboto:wght@400;500&display=swap');
 
 /* Fix Breadboard CSS */
 .v-application .v-progress-linear .info {
   background-color: var(--theme-primary) !important;
 }
+
 .notConnected {
   cursor: initial !important;
   position: relative;
 }
+
 .notConnected::after {
   position: fixed;
   top: 0;
@@ -609,6 +450,7 @@ export default {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(1em);
 }
+
 .v-btn {
   text-transform: none;
   letter-spacing: normal;
@@ -625,6 +467,7 @@ export default {
   background: var(--bg-color);
   color: var(--text-color);
 }
+
 h1,
 h2,
 h3,
@@ -636,16 +479,19 @@ canvas,
 div {
   user-select: none;
 }
+
 .center {
   margin-left: auto;
   margin-right: auto;
 }
+
 .labeled-icon {
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 1em 0;
 }
+
 .labeled-icon .v-image {
   border-radius: 100%;
   max-width: 2em;
@@ -663,24 +509,31 @@ div {
 .text--primary {
   color: var(--text-color);
 }
+
 .no-shadow {
   box-shadow: none !important;
 }
+
 .push-10 {
   padding-top: 4rem;
 }
+
 .push-down {
   margin-top: 4rem;
 }
+
 .v-app-bar.v-app-bar--fixed {
   z-index: 6;
 }
+
 .v-toolbar {
   background: var(--bg-color) !important;
 }
+
 .theme--light.v-btn.v-btn--has-bg {
   background: var(--bg-color);
 }
+
 #partnerList {
   position: fixed;
   top: 48px;
@@ -699,6 +552,7 @@ div {
   margin-bottom: 40rem;
   /* padding: 1rem; */
 }
+
 .player-container {
   display: flex;
   flex-direction: column;
@@ -708,9 +562,11 @@ div {
   font-size: 1rem;
   text-align: center;
 }
+
 .player-container.large .player-icon {
   font-size: 5em;
 }
+
 .player-container:not(:last-child):after {
   content: '';
   position: absolute;
@@ -720,6 +576,7 @@ div {
   height: 2rem;
   background: #ccc;
 }
+
 .player-icon {
   border-radius: 100%;
   background: #ccc;
@@ -733,22 +590,27 @@ div {
   overflow: hidden;
   color: #fff;
 }
+
 .player-icon.group0 {
   background: url('./assets/group0.png');
   background-size: cover;
   background-position: center;
 }
+
 .player-icon.group1 {
   background: url('./assets/group1.png');
   background-size: cover;
   background-position: center;
 }
+
 .v-subheader {
   height: auto;
 }
+
 .block-spam {
   display: none;
 }
+
 .completioncode {
   display: block;
   font-size: 2em;
@@ -762,6 +624,7 @@ div {
   font-size: 0.85em;
   justify-content: center;
 }
+
 .progress-itm {
   display: flex;
   margin: 0 1em;
@@ -769,6 +632,7 @@ div {
   white-space: nowrap;
   opacity: 0.7;
 }
+
 .number {
   font-size: 3em;
   font-weight: bold;
@@ -776,18 +640,22 @@ div {
   flex-grow: 0;
   margin-right: -0.5em;
 }
+
 .progress-itm .description {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 }
+
 .progress-itm.active,
 .progress-itm.active .number {
   opacity: 1;
 }
+
 .progress-itm.active {
   border-bottom: solid 2px rgb(108, 99, 255);
 }
+
 button[type='submit'] {
   box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
     0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);

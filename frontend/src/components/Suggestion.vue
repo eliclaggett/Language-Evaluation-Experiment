@@ -1,6 +1,6 @@
+<!-- Reply Suggestion UI Element -->
 <template>
   <div id="suggestion">
-    <!-- <div class="suggestion-body" v-on:click="edit($event)">{{ msg }}</div> -->
     <div class="suggestion-body">
       <v-btn icon v-on:click="cancel($event)" color="#bbb">
         <v-icon>mdi-close</v-icon>
@@ -34,68 +34,28 @@ export default {
   },
   methods: {
     edit: function () {
-      if (window.myInterval) clearInterval(window.myInterval);
+      if (window.myInterval) clearInterval(window.myInterval); // Cancel auto-send
       if (!this.freeze) {
         window.Breadboard.send('editSuggestion', { id: this.id });
         this.$emit('edit');
       }
     },
     cancel: function () {
-      if (window.myInterval) clearInterval(window.myInterval);
+      if (window.myInterval) clearInterval(window.myInterval); // Cancel auto-send
       if (!this.freeze) {
         window.Breadboard.send('cancelSuggestion', { id: this.id });
         this.$emit('cancel');
       }
     },
     send: function (auto = false) {
-      if (window.myInterval) clearInterval(window.myInterval);
+      if (window.myInterval) clearInterval(window.myInterval); // Cancel auto-send
 
       if (!this.freeze) {
         window.Breadboard.send('acceptSuggestion', { id: this.id, auto: auto });
         this.$emit('send');
       }
     },
-  },
-  computed: {
-    // timeRemaining() {
-    //   this.player;
-    //   var remaining = this.sendTime - ((new Date()) - this.initiateSendTime);
-    //   return remaining * 100 / this.sendTime;
-    // }
-  },
-  watch: {
-    popup(val) {
-      window.myInterval = null;
-      val;
-      // if (val == true) {
-      //   window.myInterval = setInterval(() => {
-      //     if (this.timeRemaining >= 100) {
-      //       this.send(true);
-      //       clearInterval(window.myInterval);
-      //       window.myInterval = null;
-      //     } else {
-      //       this.timeRemaining += (100 * this.animationInterval) / (this.sendTime * 1000);
-      //     }
-      //   }, this.animationInterval);
-      // }
-    },
-  },
-  mounted: function () {
-    window.myInterval = null;
-    // if (this.popup == true && !this.freeze) {
-    //      if (window.myInterval == null) {
-    //       window.myInterval = setInterval(() => {
-    //         if (this.timeRemaining >= 100) {
-    //           this.send();
-    //           clearInterval(window.myInterval);
-    //           window.myInterval = null;
-    //         } else {
-    //           this.timeRemaining += (100 * this.animationInterval) / (this.sendTime * 1000);
-    //         }
-    //       }, this.animationInterval);
-    //     }
-    //   }
-  },
+  }
 };
 </script>
 <style lang="scss">

@@ -1,18 +1,15 @@
+<!-- General tutorial for the experiment -->
 <template>
   <v-col class="pt-4 center" cols="10" md="6">
-    <!-- <h2>
-      Tutorial {{step}} / {{maxSteps}}
-    </h2> -->
     <h1 class="text-center">Tutorial</h1>
     <div v-if="step === 1" class="text--primary">
-      <!-- <v-col class="center" xl="6" lg="8" md="10" sm="8">
-        <v-img :src="require(`../assets/undraw_our_solution_re_8yk6.svg`)"></v-img>
-      </v-col> -->
       <p class="pt-4">
         As you read through this short tutorial, please answer the three comprehension
         questions that look like this:
       </p>
-      <v-alert color="primary" icon="mdi-exclamation-thick" type="success">If you do not answer all four questions correctly, we must ask you to return the HIT. In response to your feedback, we have rewritten the questions to make them more clear.</v-alert>
+      <v-alert color="primary" icon="mdi-exclamation-thick" type="success">If you do not answer all four questions
+        correctly, we must ask you to return the HIT. In response to your feedback, we have rewritten the questions to
+        make them more clear.</v-alert>
       <v-radio-group v-model="q1">
         <h3>
           Do you need to answer comprehension questions about this tutorial?
@@ -56,15 +53,8 @@
       </p>
       <v-radio-group v-model="q2">
         <h3>What does the main task involve?</h3>
-        <v-radio
-          v-for="a in q2Answers"
-          :key="a.value + '-q2'"
-          :label="a.label"
-          :value="a.value"
-        />
+        <v-radio v-for="a in q2Answers" :key="a.value + '-q2'" :label="a.label" :value="a.value" />
       </v-radio-group>
-
-      <!-- <v-alert color="primary" icon="mdi-star" type="success"><strong>Bonus Opportunity</strong> If your report is high quality (at least one paragraph long) and can be verified to sufficiently match your partner's questionnaire results, you will receive another {{player.completionBonus | money}} bonus. Depending on your actions during the experiment, your total payment could reach <strong>{{ player.prolificMaxPay | money }}</strong>.</v-alert> -->
       <br />
     </div>
     <div v-if="step === 3" class="text--primary">
@@ -74,30 +64,16 @@
       <h2 class="text-center">How we'll make pairs</h2>
       <p class="pt-4">
         Using the results of the survey you will take shortly, we will group
-        participants based on their beliefs. People in different groups will have different beliefs. People in the same group will have similar beliefs. After creating groups, we'll form some pairs within
+        participants based on their beliefs. People in different groups will have different beliefs. People in the same
+        group will have similar beliefs. After creating groups, we'll form some pairs within
         each group and some pairs between groups. After you are assigned a
         partner, you will have {{ player.chatTime }} minutes to discuss your
         thoughts.
       </p>
       <v-radio-group v-model="q3">
         <h3>If my partner is from a different group, they likely have...</h3>
-        <v-radio
-          v-for="a in q3Answers"
-          :key="a.value + '-q3'"
-          :label="a.label"
-          :value="a.value"
-        />
+        <v-radio v-for="a in q3Answers" :key="a.value + '-q3'" :label="a.label" :value="a.value" />
       </v-radio-group>
-
-      <!-- <p>        
-        Each participant will be assigned to one of two groups: 
-        <span class="d-block mt-2 mb-2">
-          <div class="labeled-icon"><v-img :src="require(`../assets/group1.png`)"></v-img>
-          Teal Tigers</div>
-          <div class="labeled-icon"><v-img :src="require(`../assets/group0.png`)"></v-img>
-          Olive Otters</div>
-        </span>
-      </p> -->
       <p>
         The survey consists of seven statements which you will react to using
         the buttons below each statement. Please answer each question carefully
@@ -105,11 +81,7 @@
         You may click anywhere on the option you like best to select it:
       </p>
       <v-col class="center" cols="4">
-        <PairItem
-          itemValue="Example button"
-          itemType="text"
-          @chooseItem="chooseItem(0)"
-        />
+        <PairItem itemValue="Example button" itemType="text" @chooseItem="chooseItem(0)" />
       </v-col>
       <p class="mt-8 mb-6 text-center">
         After making a selection, you will automatically move to the next
@@ -143,28 +115,16 @@
           What is the total pay of this HIT if you and your partner select the
           extra bonus? (total pay = base pay + bonus)
         </h3>
-        <v-radio
-          v-for="a in q4Answers"
-          :key="a.value + '-q4'"
-          :label="a.label"
-          :value="a.value"
-        />
+        <v-radio v-for="a in q4Answers" :key="a.value + '-q4'" :label="a.label" :value="a.value" />
       </v-radio-group>
-      <v-alert type="success" outlined v-if="passCheck"
-        >Correct! Let's get started.</v-alert
-      >
-      <v-alert type="error" outlined v-if="showHint"
-        >Oops! That's not right. Please review the explanation and try
-        again.</v-alert
-      >
+      <v-alert type="success" outlined v-if="passCheck">Correct! Let's get started.</v-alert>
+      <v-alert type="error" outlined v-if="showHint">Oops! That's not right. Please review the explanation and try
+        again.</v-alert>
       <br />
     </div>
     <div class="text-center">
       <v-btn @click="clickBack" :disabled="step < 2" class="mr-2">Back</v-btn>
-      <!-- <v-spacer /> -->
-      <v-btn @click="clickNext" v-if="step < maxSteps" :disabled="nextDisabled"
-        >Next</v-btn
-      >
+      <v-btn @click="clickNext" v-if="step < maxSteps" :disabled="nextDisabled">Next</v-btn>
       <v-btn @click="clickDone" v-else :disabled="nextDisabled">Continue</v-btn>
     </div>
     <p class="warningtext" v-if="nextDisabled">
@@ -175,7 +135,6 @@
 
 <script>
 /* global Breadboard */
-// import PairwiseCompare from '../components/PairwiseCompare';
 import PairItem from '../components/PairItem';
 
 const shuffleArray = (array) => {
@@ -202,9 +161,8 @@ export default {
       // Tutorial steps
       step: 1,
       passCheck: false,
-      showHint: false,
+      showHint: false, // Prolific: Instead of failing a participant for answering incorrectly, show a hint and allow them to answer again
       maxSteps: 4,
-      comprehensionOrder: Math.round(Math.random()),
       q1: '1',
       q2: '-1',
       q3: '-1',
@@ -261,9 +219,6 @@ export default {
   },
 
   computed: {
-    optionA() {
-      return this.player.groupingType == 'value' ? 'Statement A' : 'Picture A';
-    },
     q4Answers() {
       let basePay = this.player.basePay.toLocaleString('en-US', {
         style: 'currency',
@@ -292,38 +247,6 @@ export default {
 
       return sortedAnswers;
     },
-    optionB() {
-      return this.player.groupingType == 'value' ? 'Statement B' : 'Picture B';
-    },
-    valuesOrPreferences() {
-      return this.player.groupingType == 'value' ? 'values' : 'preferences';
-    },
-    pairingOption() {
-      return this.player.groupingType == 'value'
-        ? 'statement you agree with more'
-        : 'painting you like more';
-    },
-    question() {
-      return this.player.groupingType == 'value'
-        ? 'How do you feel about the concept of "global warming"? Regarding it, what do you think U.S. policy should be?'
-        : 'What makes a painting beautiful? How do you decide what is beautiful?';
-    },
-    maxBonus() {
-      return this.player.completionBonus * 2;
-    },
-    discussionTopic() {
-      return this.player.groupingType == 'value'
-        ? 'global warming'
-        : 'the beauty of paintings';
-    },
-    task2Time() {
-      return (
-        this.player.chatTime +
-        +this.player.cooperationDiscussionTime +
-        this.player.surveyTime +
-        this.player.donationTime
-      );
-    },
     nextDisabled() {
       if (this.step == 1) return this.q1 == '-1';
       if (this.step == 2) return this.q2 == '-1';
@@ -340,8 +263,6 @@ export default {
       });
     },
   },
-
-  watch: {},
 
   created() {
     shuffleArray(this.q2Answers);

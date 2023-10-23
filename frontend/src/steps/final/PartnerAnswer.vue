@@ -1,25 +1,14 @@
+<!-- Rate how level of agreement with conversation partner's report of my opinion -->
 <template>
   <v-row>
-    <v-col
-      v-if="this.player.partnerReport == ''"
-      class="push-10 center"
-      xl="4"
-      lg="6"
-      md="6"
-    >
+    <v-col v-if="this.player.partnerReport == ''" class="push-10 center" xl="4" lg="6" md="6">
       <h1 class="text-center mb-4">Waiting for your partner to finish...</h1>
       <p>
         We will ask you to review your partner's answers after they finish
         writing their report. You will wait a maximum of {{ remainingTime }}.
       </p>
     </v-col>
-    <v-col
-      v-if="this.player.partnerReport != ''"
-      class="push-10 center"
-      xl="4"
-      lg="6"
-      md="6"
-    >
+    <v-col v-if="this.player.partnerReport != ''" class="push-10 center" xl="4" lg="6" md="6">
       <h1 class="text-center mb-4">
         According to your partner,<br />your opinion is:
       </h1>
@@ -48,44 +37,6 @@ import LikertQuestion from '../components/LikertQuestion.vue';
 export default {
   name: 'PartnerAnswerStep',
   components: { LikertQuestion },
-  // watch: {
-  //   player(val) {
-  //     console.log(val.submit);
-  //   }
-  // },
-
-  mounted() {
-    document.querySelectorAll('button').forEach((el) => {
-      el.className =
-        'v-btn v-btn--is-elevated v-btn--has-bg theme--light v-size--default';
-    });
-
-    document.addEventListener('submit', (ev) => {
-      ev.preventDefault();
-      let formData = new FormData(ev.target);
-
-      var object = {};
-      formData.forEach((value, key) => {
-        // Reflect.has in favor of: object.hasOwnProperty(key)
-        if (!Reflect.has(object, key)) {
-          object[key] = value;
-          return;
-        }
-        if (!Array.isArray(object[key])) {
-          object[key] = [object[key]];
-        }
-        object[key].push(value);
-      });
-      object['action'] = ev.target.action;
-      object['method'] = ev.target.method;
-      object['html'] = ev.target.outerHTML;
-      var json = JSON.stringify(object);
-
-      Breadboard.send('submitHIT', json);
-      ev.target.submit();
-    });
-  },
-
   props: {
     player: Object,
   },
@@ -122,7 +73,7 @@ export default {
         var endTime =
           (this.player.surveyStartTime +
             this.player.surveyTime * 60 +
-            this.player.donationTime * 60) *
+            this.player.cooperationTime * 60) *
           1000;
 
         var diff = (endTime - curTime) / 1000;
@@ -137,11 +88,6 @@ export default {
         return '';
       }
     },
-    submitText() {
-      return this.player.platform == 'mturk'
-        ? 'able to submit this HIT'
-        : 'given a completion code for this study';
-    },
   },
 };
 </script>
@@ -151,6 +97,7 @@ export default {
   margin-bottom: 1em;
   color: #000 !important;
 }
+
 .partnerReport .v-card__text {
   color: #000 !important;
   font-size: 1rem !important;

@@ -6,6 +6,11 @@ Platform for running interactive multi-player social experiments with strategic 
 
 Please see the [ for detail instructions for modifying the experiment.
 
+The texts are variables included in the python natural language processing, java backend for controlling the experiment, and vue.js frontend.
+
+The .env also is shared by these three modules.
+
+
 ### Prerequisites
 
 - Python
@@ -33,7 +38,7 @@ You will get an error that the shards can't be loaded.
 
 ## Citation
 
-No arXiv preprint 😢
+TBD
 
 ## Acknowledgements
 

@@ -1,3 +1,12 @@
+/*
+ * Filename: FunctionsRecaptcha.groovy
+ * Author: Elijah Claggett
+ * Date: October 19, 2023
+ *
+ * Description:
+ * This Groovy script defines functions used to validate Recaptcha results.
+ */
+
 @Grab('com.squareup.okhttp3:okhttp:3.5.0')
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -9,6 +18,7 @@ import java.time.Instant
 
 OkHttpClient client = new OkHttpClient()
 
+// Start the recaptcha step
 startRecaptcha = { player ->
     player.gameStep = "recaptcha"
 }
@@ -19,6 +29,7 @@ verifyRecaptcha = { player, data ->
     def userTime = data['time'];
     player.utcOffset = systemTime - userTime;
 
+    // Check recaptcha response with Google servers
     RequestBody body = new FormBody.Builder()
                 .add("secret", Param.RECAPTCHA_SECRET)
                 .add("response", data['response'])
@@ -31,6 +42,8 @@ verifyRecaptcha = { player, data ->
     def responseString = response.body().string()
     JSONObject obj = new JSONObject(responseString)
     def captcha = obj.get("success")
+
+    // Participants passed recaptcha
     if (captcha) {
         player.gameStep = 'tutorial'
         a.addEvent("passedRecaptcha", [
@@ -39,6 +52,7 @@ verifyRecaptcha = { player, data ->
                   ])
           ])
     } else {
+        // Participant failed recaptcha
         player.gameStep = "failedCaptcha"
         Param.numPlayers--
         player.qualified = false

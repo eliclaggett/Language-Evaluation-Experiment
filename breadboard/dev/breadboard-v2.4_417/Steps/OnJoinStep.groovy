@@ -1,3 +1,13 @@
+/*
+ * Filename: OnJoinStep.groovy
+ * Author: Elijah Claggett
+ * Date: October 19, 2023
+ *
+ * Description:
+ * This is the main Groovy script defining the experimental procedure.
+ * This script is required for Breadboard. It executes when an experiment participant joins the session.
+ */
+
 import java.time.Instant
 import java.text.SimpleDateFormat
 import groovy.json.JsonSlurper
@@ -8,6 +18,7 @@ import org.java_websocket.client.WebSocketClient
 import org.java_websocket.drafts.Draft
 import org.java_websocket.handshake.ServerHandshake
 
+// Minimal websocket class
 public class ExampleClient extends WebSocketClient {
 
   public ExampleClient(URI serverUri, Draft draft) {
@@ -46,8 +57,9 @@ public class ExampleClient extends WebSocketClient {
 
 }
 
+// Start pre-evaluation step
 def startPreEval(player) {
-  player.gameStep = 'verification'
+  player.gameStep = 'preEval'
   msgs = [
     "Welcome to this HIT! This task simply involves exchanging opinions about a specific topic with a partner.",
     "Let's start with a practice session.",
@@ -65,12 +77,13 @@ onJoinStep.run = { playerId ->
   def player = g.getVertex(playerId)
   if (!player) { return }
   println('onJoinStep.run:' + Param.numPlayers)
-  // Initialize player variables
+  
+  // Initialize player attributes
   player.interventionMode = Param.interventionMode
   player.samplingMode = Param.samplingMode
   player.rejectedSuggestions = []
   player.chatId = Param.chatIdCounter
-  player.gameStep = 'verification'
+  player.gameStep = 'preEval'
   player.stepEvaluation = 0
   player.basePay = Param.basePay
   player.completionBonus = Param.completionBonus
@@ -81,10 +94,6 @@ onJoinStep.run = { playerId ->
   player.multiplier = Param.multiplier
   player.timeoutWarning = Param.timeoutWarning
   player.timeout = Param.timeout
-  player.earned = player.basePay
-  player.received = -1
-  player.donated = -1
-  player.chatTurn = false
   player.groupingComplete = false
   player.surveyFactors = Param.surveyFactors
   player.imageFactors = Param.imageFactors
@@ -93,12 +102,7 @@ onJoinStep.run = { playerId ->
   player.displayNeighborNodes = true
   player.isWaiting = true
   player.qualified = false
-  // player.surveyPairs = Param.surveyPairs
   player.imagePairs = Param.imagePairs
-  // player.likertQuestions = Param.likertQuestions
-  // player.customExamples = Param.customExamples
-  // player.customFollowups = Param.customFollowups
-  // player.customExampleSources = Param.customExampleSources
   player.topic = -1
   player.partnerReport = ''
   player.chatStartTime = ''
@@ -106,22 +110,21 @@ onJoinStep.run = { playerId ->
   player.surveyStartTime = ''
   player.cooperationDiscussionStartTime = ''
   player.cooperationDiscussionTime = Param.cooperationDiscussionTime
-  player.donationStartTime = ''
+  player.cooperationStartTime = ''
   player.chatEndTime = ''
   player.utcOffset = 0
   player.chatTime = Param.chatTime
   player.surveyTime = Param.surveyTime
-  player.donationTime = Param.donationTime
+  player.cooperationTime = Param.cooperationTime
   player.submit = ''
   player.finished = false
   player.showReady = false
   player.groupingType = (Param.groupingMethod == true) ? 'value' : 'artificial'
-  player.groupingPreferences = []
+  player.initalSurveyAnswers = []
   player.groupingFactors = [0, 0, 0]
   player.groupId = -1
   player.groupName = ''
   player.groupImage = ''
-  player.gstepconfirmed = false
   player.doneFakeLoading = false
   player.passedHumanCheck = false
   player.checkingVerification = false
@@ -137,8 +140,6 @@ onJoinStep.run = { playerId ->
   player.prolificId = ''
   player.completionCode = Param.completionCode
   player.waitingTime = Param.waitingTime
-  player.totalMsgLength = 0
-  player.askedForMore = false
   player.evaluationStep = ''
   player.readyToScoreEvaluation = false
   player.evalScore = -1
@@ -147,6 +148,7 @@ onJoinStep.run = { playerId ->
   player.bonusOption = -1
   player.partnerBonusOption = -1
 
+  // Record player id
   a.addEvent('setPlayerId', [
     data: Param.jsonGen.toJson([
         playerId: player.chatId,
@@ -154,7 +156,6 @@ onJoinStep.run = { playerId ->
         amtUserId: playerId
       ])
     ])
-  // Add timer until grouping automatically begins
 
   def date = new Date()
   def currentTime = date.getTime()
@@ -163,6 +164,7 @@ onJoinStep.run = { playerId ->
   if (!Param.uiTest) {
     if (Param.startAt == null) {
       // First player
+      // Record experiment parameters
       Param.verificationFile = new File('verification.txt')
       Param.verificationFile.append('Start experiment: ' + dateString + '\n')
       Param.startAt = currentTime + (Param.waitingTime * 60 * 1000)
@@ -189,11 +191,13 @@ onJoinStep.run = { playerId ->
       a.addEvent('sandbox', [
         data: Param.sandbox])
 
+      // Automatically start main task after waiting time elapses
       def timer = new Timer()
-      //Param.initStepTask = timer.runAfter(Param.waitingTime * 60 * 1000) {
-        //initStep.run()
-      //}
+      Param.initStepTask = timer.runAfter(Param.waitingTime * 60 * 1000) {
+        initStep.run()
+      }
 
+      // Open a websocket connection with the NLP server if there is an experimental intervention
       if (Param.interventionMode == 'reply' || Param.interventionMode == 'bot') {
         def socket = null
         if (Param.mode == 'dev') {
@@ -208,11 +212,13 @@ onJoinStep.run = { playerId ->
     }
     player.gameStart = Param.startAt
 
-    // if (Param.startAt - currentTime < 0) {
-    //   player.gameStep = 'tooLate'
-    //   return
-    // }
+    // Handle if participants join after the main task starts (should never happen)
+    if (Param.startAt - currentTime < 0) {
+      player.gameStep = 'tooLate'
+      return
+    }
 
+    // Waiting room text 
     def timerText = 'The main task will start in:'
     if (Param.platform == 'prolific') {
       timerText = 'The next task will start in:'
@@ -220,6 +226,7 @@ onJoinStep.run = { playerId ->
     Param.playerTimers[player.chatId] = g.addTimer('player': player, time: ((Param.startAt - currentTime) / 1000).toInteger(), type: 'time', appearance: 'info', timerText: timerText, direction: 'down', result: { })
   }
 
+  // Register a participant's Prolific details stored in URL parameters
   player.on('registerProlific', { v, data ->
     def prolificId = (data['prolificId']) ? data['prolificId'] : ''
     def sessionId = (data['sessionId']) ? data['sessionId'] : ''
@@ -238,11 +245,14 @@ onJoinStep.run = { playerId ->
     }
   })
 
+  // Executed when a participant submits reCAPTCHA
   player.on('verifyRecaptcha', { v, data ->
     verifyRecaptcha(v, data)
   })
 
+  // Executed only in the 'mcq' participant pre-evaluation/sampling mode
   player.on('humanCheck', { v, data ->
+    
     if (Param.samplingMode == 'mcq') {
       if (data['q1'] != 'a4' || data['q2'] != 'a4') {
         judgeHuman(v.chatId, 0)
@@ -256,6 +266,7 @@ onJoinStep.run = { playerId ->
     player.utcOffset = systemTime - userTime
   })
 
+  // Executed when a participant finishes the tutorial
   player.on('checkUnderstanding', { v, data ->
     def passCheck = true;
     if (
@@ -288,6 +299,7 @@ onJoinStep.run = { playerId ->
     }
   })
 
+  // Executed when a participant submits the consent form
   player.on('consent', { v, data ->
     if (data.q1 == 'yes' && data.q2 == 'yes' && data.q3 == 'yes') {
       a.addEvent('giveConsent', [
@@ -305,8 +317,7 @@ onJoinStep.run = { playerId ->
                 ])
         ])
     }
-  })
-  player.on('completeConsent', { v, data ->
+
     if (!v.finished) {
       if (Param.samplingMode == 'all' || Param.platform == 'prolific') {
         judgeHuman(v.chatId, 1)
@@ -314,8 +325,9 @@ onJoinStep.run = { playerId ->
         startPreEval(v)
       }      
     }
-  });
+  })
 
+  // Executed when a participant completes the main tutorial (record event happening)
   player.on('completeTutorial', { v, data ->
     a.addEvent('completedTutorial', [
           data: Param.jsonGen.toJson([
@@ -324,6 +336,7 @@ onJoinStep.run = { playerId ->
       ])
   });
 
+  // Executed when a participant receives a reply suggestion (record event happening)
   player.on('receiveSuggestion', { v, data ->
     a.addEvent('receiveSuggestion', [
           data: Param.jsonGen.toJson([
@@ -332,6 +345,7 @@ onJoinStep.run = { playerId ->
       ])
   });
 
+  // Executed when a participant accepts a reply suggestion (record event happening)
   player.on('acceptSuggestion', { v, data ->
     a.addEvent('acceptSuggestion', [
           data: Param.jsonGen.toJson([
@@ -341,6 +355,7 @@ onJoinStep.run = { playerId ->
       ])
   });
 
+  // Executed when a participant edits a reply suggestion (record event happening)
   player.on('editSuggestion', { v, data ->
     a.addEvent('editSuggestion', [
           data: Param.jsonGen.toJson([
@@ -350,6 +365,7 @@ onJoinStep.run = { playerId ->
       ])
   });
 
+  // Executed when a participant cancels a reply suggestion (record event happening)
   player.on('cancelSuggestion', { v, data ->
     v.rejectedSuggestions.push(data.id)
     a.addEvent('cancelSuggestion', [
@@ -360,45 +376,26 @@ onJoinStep.run = { playerId ->
       ])
   })
 
-  player.on('completeCooperationGame', { v, data ->
-    v.gameStep = 'partnerAnswer'
-    // v.donated = data['amount']
+  // Executed when a participant makes a cooperation decision
+  player.on('completeCooperationDecision', { v, data ->
+    v.gameStep = 'gradePartnerAnswer'
 
     v.bonusOption = data['option'] as int
 
-    if (Param.donationTimers[v.chatId]) {
-      Param.donationTimers[v.chatId].cancel()
+    if (Param.cooperationDecisionTimers[v.chatId]) {
+      Param.cooperationDecisionTimers[v.chatId].cancel()
     }
 
+    // Check if partner is also finished
     def neighborsFinished = true
-    // def sharedPotTotal = v.donated
-
     v.neighbors.each { n ->
-      // if (n.donated == -1) {
-      //   neighborsFinished = false
-      // }
-      // sharedPotTotal += Math.max(n.donated as float, 0 as float)
-      // n.received = data['amount']
       if (n.bonusOption == -1) {
         neighborsFinished = false
       }
       n.partnerBonusOption = v.bonusOption
     }
 
-    // if (neighborsFinished) {
-    //   def sharedPotPayout = Math.floor(sharedPotTotal * 75)
-    //   sharedPotPayout /= 100
-    //   def bonus = v.completionBonus - Math.max(v.donated as float, 0 as float) + sharedPotPayout
-    //   bonus = Math.ceil(bonus * 100) / 100
-    //   def reason = 'completed'
-    //   def comments = false
-    //   v.submit = g.getSubmitForm(v, bonus, reason, Param.sandbox, comments)
-    //   v.neighbors.each { n ->
-    //     bonus = n.completionBonus - Math.max(n.donated as float, 0 as float) + sharedPotPayout
-    //     bonus = Math.ceil(bonus * 100) / 100
-    //     n.submit = g.getSubmitForm(n, bonus, reason, Param.sandbox, comments)
-    //   }
-    // }
+    // Determine final bonus based on participant and partner's coordinated decision
     if (v.bonusOption as int == 1 || neighborsFinished) {
       
       def allPartnersAgree = true
@@ -412,14 +409,17 @@ onJoinStep.run = { playerId ->
       if (v.bonusOption as int == 1) {
         bonus = Param.completionBonus
       } else if (v.bonusOption as int == 2 && allPartnersAgree) {
+        // Both partners must select option two to receive the extra bonus
         bonus = Param.mutualCompletionBonus
       }
 
+      // Calculate final bonus and allow participant to submit the HIT
       bonus = Math.ceil(bonus * 100) / 100
       def reason = 'completed'
       def comments = false
       v.submit = g.getSubmitForm(v, bonus, reason, Param.sandbox, comments)
 
+      // Store final bonus of chat partners and allow them to submit the HIT
       v.neighbors.each { n ->
         def neighborBonus = 0
         if (n.bonusOption as int == 1) {
@@ -433,13 +433,8 @@ onJoinStep.run = { playerId ->
       }
     }
 
-    // a.addEvent('completedCooperationGame', [
-    //       data: Param.jsonGen.toJson([
-    //               playerId: v.chatId,
-    //               donationAmount: v.donated
-    //             ])
-    //   ])
-    a.addEvent('completedCooperationGame', [
+    // Record that the cooperation decision was made
+    a.addEvent('completedCooperationDecision', [
           data: Param.jsonGen.toJson([
                   playerId: v.chatId,
                   bonusOption: v.bonusOption
@@ -447,21 +442,26 @@ onJoinStep.run = { playerId ->
       ])
   })
 
+  // Executed when a participant completes the follow-up survey
   player.on('completeSurvey', { v, data ->
     if (Param.surveyTimers[v.chatId]) {
       Param.surveyTimers[v.chatId].cancel()
     }
+
+    // Set timer for cooperation decision
     def timer = new Timer()
-    v.donationStartTime = Instant.now().epochSecond
-    Param.donationTimers[v.chatId] = timer.runAfter((Param.donationTime * 60 * 1000) as int) {
+    v.cooperationStartTime = Instant.now().epochSecond
+    Param.cooperationDecisionTimers[v.chatId] = timer.runAfter((Param.cooperationTime * 60 * 1000) as int) {
       endHIT(v)
     }
 
+    // Share survey answers with partner so they can peer review
     v.gameStep = 'game'
     v.neighbors.each { n ->
       n.partnerReport = data
     }
-    // v.displayNeighborNodes = false
+
+    // Record event happening
     a.addEvent('completedSurvey', [
           data: Param.jsonGen.toJson([
                   playerId: v.chatId] + data
@@ -469,10 +469,12 @@ onJoinStep.run = { playerId ->
       ])
   })
 
+  // Executed when fake loading process is over
   player.on('doneFakeLoading', { v, data ->
     v.doneFakeLoading = true
   })
 
+  // Executed when a participant peer-reviews their partners follow-up survey answers
   player.on('reportPartnerAnswer', { v, data ->
     a.addEvent('reportPartnerAnswer', [
           data: Param.jsonGen.toJson([
@@ -482,24 +484,31 @@ onJoinStep.run = { playerId ->
     v.gameStep = 'end'
   })
 
-  player.on('chooseGroupingPreference', { v, data ->
-    chooseGroupingPreference(v, data)
+  // Executed every time a participant selects an answer in the initial survey
+  player.on('answerInitialSurvey', { v, data ->
+    answerInitialSurvey(v, data)
   })
 
-  player.on('completeGrouping', { v, data ->
-    completeGrouping(v, data)
+  // Executed when a participant finishes the initial survey
+  player.on('completeInitialSurvey', { v, data ->
+    completeInitialSurvey(v, data)
   })
-  player.on('readyForGrouping', { v, data ->
+
+  // Executed when a participants finishes the initial survey and main task tutorial
+  player.on('readyForMainTask', { v, data ->
     v.qualified = true
-    Param.numReadyForGrouping++
-    if (Param.numReadyForGrouping == Param.numPlayers) {
+    Param.numReadyForMainTask++
+    if (Param.numReadyForMainTask == Param.numPlayers) {
       if (Param.initTask) {
         Param.initTask.cancel()
       }
+
+      // Group and pair all participants
       calculateGroups()
     }
   })
 
+  // Set a pair's chat end time based on their start time
   player.on('setChatEndTime', { v, data ->
     def endTime = 0
     v.neighbors.each { neighbor ->
@@ -513,10 +522,12 @@ onJoinStep.run = { playerId ->
     }
   })
 
-  player.on('startCheapTalk', { v, data ->
-    startCheapTalk(v)
+  // Executed when participants move to the main chat
+  player.on('startMainChat', { v, data ->
+    startMainChat(v)
   })
 
+  // Executed if a participant attempts to use a bad word
   player.on('profane', { v, data ->
     a.addEvent('usedBadWord', [
           data: Param.jsonGen.toJson([
@@ -524,22 +535,25 @@ onJoinStep.run = { playerId ->
                 )
       ])
     if (v.profane) {
+      // If you already received a warning, it's over
       endExperimentProfanity(v)
     }
-    v.profane = true
+    v.profane = true // This is your one warning!
   })
 
+  // Executed if a participant confirms that they want to report their partner
   player.on('clickReport', { v, data ->
     a.addEvent('reportPartner', [
           data: Param.jsonGen.toJson([
                   playerId: v.chatId]
                 )
       ])
+ 
     endExperimentProfanity(v)
   })
 
+  // Executed when a participant is inactive past the limit
   player.on('chatTimeout', { v, data ->
-    println('Vue chat timeout')
     if (v.qualified) {
       a.addEvent('chatTimeout', [
             data: Param.jsonGen.toJson([
@@ -550,6 +564,7 @@ onJoinStep.run = { playerId ->
     }
   })
 
+  // Executed when a participant sends a message during the pre-evaluation step
   player.on('sendMessageEvaluation', { v, data ->
     
     // Record the message that the participant sent
@@ -562,46 +577,25 @@ onJoinStep.run = { playerId ->
                   ])
     ])
 
-    // Either speed up sending the next message or schedule a new process to send the next message
     if (Param.evalMessageTimers[v.chatId] != null) {
       Param.evalMessageTimers[v.chatId].cancel()
-      // Param.evalMessageTimers[v.chatId].purge()
       Param.evalMessageTimers[v.chatId] = null
     } 
     
+    // Send the next reply from the chatbot or score the pre-evaluation
     if (v.evaluationStep < Param.messagesEvaluation[2].size()) {
       scheduleEvalMessage(v, 5)
     } else {
       v.readyToScoreEvaluation = true
     }
-    
-    if (v.lastEvalMessageReceived == v.evaluationStep) {
-      // v.evaluationStep += 1
-    }
-    
-    
-    // if (v.evaluationStep == 'Q1 - yes' || v.evaluationStep == 'Q1 - no - change mind' || v.evaluationStep == 'Q2' || v.evaluationStep == 'Q3') {
-    //   def jsonSlurper = new JsonSlurper()
-    //   def parsedMsg = jsonSlurper.parseText(data.message)
-    //   v.totalMsgLength += parsedMsg.content.size()
-    //   if (v.totalMsgLength < 40 && !v.askedForMore) {
-    //     v.askedForMore = true
-    //     v.messagesEvaluation.add(generateEvaluatorMessage('Can you please explain in at least a few sentences?'))
-    //   } else if (v.evaluationStep == 'Q3') {
-    //     // Done with pre-evaluation
-    //     // Evaluate all messages
-    //     v.messagesEvaluation.add(generateEvaluatorMessage('Great! Thanks for your patience. I will pass you on to the next task briefly!'))
-    //     v.readyToScoreEvaluation = true
-    //   }
-    // }
   });
 
+  // Executed when we use an external service like the NLP server to send pre-evaluation messages
+  // The Vue.JS application communicates with the external service then gives us the reply to send
   player.on('preEvalReply', { v, data ->
     if (v.evaluationStep != 'Q4') {
       v.messagesEvaluation.add(generateEvaluatorMessage(data.msg))
       v.evaluationStep = data.id
-      v.totalMsgLength = 0
-      v.askedForMore = false
 
       a.addEvent('evaluationReply', [
               data: Param.jsonGen.toJson([
@@ -612,6 +606,7 @@ onJoinStep.run = { playerId ->
     }
   });
 
+  // Executed when the participant receives a score for their pre-evaluation messages
   player.on('evalScore', { v, data ->
     v.evalScore = data.score
     v.passEval = v.evalScore >= 0.6
@@ -622,127 +617,26 @@ onJoinStep.run = { playerId ->
                     data: data.score
                   ])
     ])
+
+    // Move all participants on to the next step (do not fail them based on the score)
     judgeHuman(v.chatId, 1)
   });
 
-  player.on('sendMessageEvaluation_old', { v, data ->
-    v.messagesEvaluation.add(data.message)
-
-    a.addEvent('evaluationMessage', [
-            data: Param.jsonGen.toJson([
-                    playerId: v.chatId,
-                    data: data.message
-                  ])
-      ])
-
-    def timer = new Timer()
-    def chatbotMode = Param.samplingMode == 'chatbot' ? 0 : 1
-
-    if (v.stepEvaluation == 0) {
-      timer.runAfter(2 * 1000) {
-        player.messagesEvaluation.add(generateEvaluatorMessage(Param.messagesEvaluation[chatbotMode][1]))
-      }
-    } else if (v.stepEvaluation == 1) {
-      timer.runAfter(2 * 1000) {
-        player.messagesEvaluation.add(generateEvaluatorMessage(Param.messagesEvaluation[chatbotMode][2]))
-      }
-    } else {
-      // Check if player's answer is related to bot check, human check, attention check
-      def jsonSlurper = new JsonSlurper()
-      def allAnswers = '---' + v.chatId + '---\n\n'
-      def autoPass = true
-      def haveAllAnswers = false
-      def idx = 0
-      for (msg in player.messagesEvaluation) {
-        msgObject = jsonSlurper.parseText(msg)
-        if (msgObject.participantId != -1) {
-          def thisAnswer = msgObject.content.toLowerCase()
-          def thisAnswerCased = msgObject.content
-          // AutoPass: Check answer 1
-          if (idx == 0) {
-            if ( !(thisAnswer ==~ /.*(0|zero|no|never|n't|nt).*/) ) {
-              autoPass = false
-            }
-          }
-          // AutoPass: Check answer 2
-          if (idx == 1) {
-            if ( !(thisAnswer ==~ /.*(hcii|slab|communication|cmu).*/) ) {
-              autoPass = false
-            }
-          }
-          // AutoPass: Check answer 3
-          if (idx == 2) {
-            if ( chatbotMode == 0 && !(thisAnswer ==~ /.*(attention|bot|human|real|person|quality).*/) ) {
-              autoPass = false
-            } else if (chatbotMode == 1) {
-              // def correctAnswer = "I am ready to begin."
-              def correctAnswer = 'I am comfortable beginning this task.'
-              def numWrongCharacters = correctAnswer.length()
-              def j = 0
-              for (int i = 0; i < thisAnswer.length(); i++) {
-                if ((i == 0 || i == thisAnswer.length() - 1) && thisAnswer[i] == '"') { continue }
-                if (i >= correctAnswer.length()) { break }
-                if (thisAnswerCased[i] == correctAnswer[j]) { numWrongCharacters-- }
-                j++
-              }
-              if (numWrongCharacters > 1) { autoPass = false }
-            }
-            haveAllAnswers = true
-          }
-          allAnswers += msgObject.content + '\n\n'
-          idx++
-        } else {
-        }
-      }
-      allAnswers += '-------\n'
-      v.checkingVerification = true
-      if (haveAllAnswers) {
-        if (Param.verificationFile && !autoPass) {
-          Param.verificationFile.append(allAnswers)
-          judgeHuman(v.chatId, 0)
-        } else if (autoPass) {
-          judgeHuman(v.chatId, 1)
-        } else {
-          println('ERROR NO VERIFICATION FILE')
-        }
-      }
-
-      timer.runAfter(1 * 1000) {
-        player.messagesEvaluation.add(generateEvaluatorMessage('Thanks. Please wait while we review your answers.'))
-      }
-    }
-    v.stepEvaluation++
-  })
-
-  // updating chat messages
+  // Executed when a participant sends a message in the main chat
   player.on('chat', { v, data ->
-    // add message to both player and neighbor list
+    
+    // Add message to both player and neighbor list
     v.messagesChat.add(data.message)
     println(data.message)
 
     v.lastChatTime = Instant.now().epochSecond
 
     v.messageReceived = false
-    // def timeOfChat = Instant.now().epochSecond
+
     v.neighbors.each { neighbor ->
-      //   // toggle messageReceived so that the slot becomes visible for partner
+      // toggle messageReceived so that the slot becomes visible for partner
       neighbor.messageReceived = true
       neighbor.messagesChat.add(data.message)
-
-    //   def timeDiff = 0
-    //   // check chat timeout time for neighbors
-    //   if (neighbor.lastChatTime != '') {
-    //     timeDiff = timeOfChat - neighbor.lastChatTime
-    //   } else if (neighbor.chatStartTime != '') {
-    //     timeDiff = timeOfChat - neighbor.chatStartTime
-    //   } else {
-    //     timeDiff = 0
-    //   }
-    //   if (timeDiff > Param.timeout) {
-    //     println('sendChat neighbor chat timeout')
-    //     endExperimentChatTimeout(neighbor)
-    //     return
-    //   }
     }
     a.addEvent('chatMessage', [
           data: Param.jsonGen.toJson([
@@ -750,35 +644,11 @@ onJoinStep.run = { playerId ->
                   data: data.message
                 ])
       ])
-
-    // process message and submit api request for smart suggestions
-    /*
-    def m = jsonSlurper.parseText(data.message)
-    // note: deal with ' in messages?
-    get = new URL("http://localhost:105/predict?context="+m.content).openConnection();
-    get.setRequestMethod("GET")
-    get.setDoOutput(true)
-    getRC = get.getResponseCode();
-    if (getRC.equals(200)) {
-          // update the neighbor's suggestion bar
-          v.neighbors.each {neighbor ->
-          def response = jsonSlurper.parseText(get.getInputStream().getText())
-          println(response)
-          // we only want the first three responses
-          int counter = 0;
-          response.each {
-              key, value -> if (counter < 3) {
-                // update suggestions array accordingly
-                neighbor.sug[counter] = key;
-                counter++;
-              }
-          }
-          }
-    }
-    */
   }
   )
 
+  // Executed when a participant sends a message in the main chat
+  // We record their deleted characters
   player.on('charsSinceLastChat', { v, data ->
     a.addEvent('charsSinceLastChat', [
           data: Param.jsonGen.toJson([
@@ -788,6 +658,7 @@ onJoinStep.run = { playerId ->
       ])
   })
 
+  // Executed when a participant submits the HIT
   player.on('submitHIT', { v, data ->
     a.addEvent('submitHIT', [
           data: Param.jsonGen.toJson([
@@ -800,6 +671,7 @@ onJoinStep.run = { playerId ->
     v.finished = true
   })
 
+  // Executed when a participant submits feedback at the end of the experiment
   player.on('submitFeedback', { v, data ->
     a.addEvent('submitFeedback', [
           data: Param.jsonGen.toJson([
@@ -809,14 +681,8 @@ onJoinStep.run = { playerId ->
       ])
   })
 
-  // --- SMART REPLY ---
-  // variables needed for displaying suggestions
-  // player.messageTemplate = jsonSlurper.parseText('{"content":"","participantId":1,"uploaded":false,"viewed":false,"type":"text"}');
-  // player.messageReceived = false;
-  // initial suggestions:
-  // player.sug = ["Hello!", "How are you?", "Hi there."];
 
-  // startRecaptcha(player)
+  // Start the experiment with the pre-evaluation
   startPreEval(player)
   Param.numPlayers++
   Param.chatIdCounter++

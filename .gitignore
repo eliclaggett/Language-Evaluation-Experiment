@@ -7,7 +7,7 @@ node_modules
 */__pycache__/*
 verification.txt
 RUNNING_PID
-
+.vscode/*
 
 bot/models
 bot/shards

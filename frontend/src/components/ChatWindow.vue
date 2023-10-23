@@ -1,62 +1,17 @@
+<!-- Chat UI Element -->
 <template>
-  <Chat
-    :participants="chatParticipants"
-    :myself="myself"
-    :messages="messages"
-    @onMessageSubmit="onMessageSubmit"
-    @onType="onType"
-    :placeholder="placeholder"
-    :colors="colors"
-    :profile-picture-config="profilePictureConfig"
-    :borderStyle="borderStyle"
-    :hideCloseButton="hideCloseButton"
-    :send-images="false"
-    :submitIconSize="submitIconSize"
-    :scrollBottom="{ messageSent: false, messageReceived: false }"
-    class="elevation-3"
-  >
-    <!-- <template v-slot:header> -->
-    <!-- <div class="chat-participants">
-        <div class="player-container" v-for="neighbor in player.neighborNodes" :key="neighbor.chatId">
-              <div class="player-icon" :class="`group${neighbor.groupId}`"></div>
-            </div>
-      </div> -->
-    <!-- <div class="header-title"></div> -->
-    <!-- <div class="chat-participants">
-            <div class="player-container" >
-              <div class="player-icon" :class="`group${player.groupId}`"></div>
-            </div>
-            
-          </div> -->
-    <!-- </template> -->
-
+  <Chat :participants="chatParticipants" :myself="myself" :messages="messages" @onMessageSubmit="onMessageSubmit"
+    @onType="onType" :placeholder="placeholder" :colors="colors" :profile-picture-config="profilePictureConfig"
+    :borderStyle="borderStyle" :hideCloseButton="hideCloseButton" :send-images="false" :submitIconSize="submitIconSize"
+    :scrollBottom="{ messageSent: false, messageReceived: false }" class="elevation-3">
     <template v-slot:footer>
       <div id="new-msg-alert" @click="scrollToBottom" class="hide-alert">
         New Message&nbsp;&darr;
       </div>
       <span id="character-counter">1 / 140</span>
-      <!-- <div class="suggestions">
-          <v-btn outlined plain rounded small
-            v-on:click="onSuggestionClick(player.sug[0])">
-            {{ player.sug[0] }}</v-btn>
-          <v-btn outlined plain rounded small
-            v-on:click="onSuggestionClick(player.sug[1])">
-            {{ player.sug[1] }}</v-btn>
-          <v-btn outlined plain rounded small
-            v-on:click="onSuggestionClick(player.sug[2])">
-            {{ player.sug[2] }}</v-btn>
-        </div> -->
       <v-slide-y-reverse-transition origin="bottom center 0">
-        <Suggestion
-          :player="player"
-          :popup="true"
-          v-if="showSuggestion"
-          :msg="nlp.suggestion"
-          :id="nlp.id"
-          @edit="editSuggestion"
-          @cancel="cancelSuggestion"
-          @send="sendSuggestion"
-        />
+        <Suggestion :player="player" :popup="true" v-if="showSuggestion" :msg="nlp.suggestion" :id="nlp.id"
+          @edit="editSuggestion" @cancel="cancelSuggestion" @send="sendSuggestion" />
       </v-slide-y-reverse-transition>
     </template>
   </Chat>
@@ -73,8 +28,7 @@ export default {
 
   components: {
     Chat,
-    Suggestion,
-    // Filter
+    Suggestion
   },
   props: {
     player: Object,
@@ -84,10 +38,9 @@ export default {
   },
 
   data: () => ({
-    // can set up a props variable to replace the hard-coded text once we
-    // know which prompts to use
+
+    // Related to reply suggestions
     showSuggestion: false,
-    finishedPreparingFirstSuggestion: false,
     waitingForPreReq: false,
     requestedEncouragement: false,
     requestedFarewell: false,
@@ -96,9 +49,9 @@ export default {
     chatEndTime: new Date(),
     lastMsgReceived: new Date(),
 
+    // UI settings
     placeholder: 'Type your message here',
     startedScrolling: false,
-    // showSuggestion: false,
     colors: {
       header: {
         bg: '#fff',
@@ -141,15 +94,17 @@ export default {
   }),
   methods: {
     loadMoreMessages() {
-      // do nothing
+      // Do nothing
     },
     scrollToBottom() {
+      // Scroll to the latest chat message
       let el = document.querySelector('.container-message-display');
       el.scrollTop = el.scrollHeight;
       el.dispatchEvent(new CustomEvent('scroll'));
       document.querySelector('#new-msg-alert').className = 'hide-alert';
     },
     conditionalScrollToBottom() {
+      // Scroll to the latest chat message (unless participant is scrolling)
       let el = document.querySelector('.container-message-display');
       this.isScrolling = el.scrollHeight - el.scrollTop != el.clientHeight;
 
@@ -158,67 +113,42 @@ export default {
         el.dispatchEvent(new CustomEvent('scroll'));
       }
     },
-    // when player submits a chat message
+
     onMessageSubmit: function (message) {
+
+      // Reset character counter
       document.querySelector('#character-counter').innerText = '0 / 140';
 
-      // Send the message to be processed by NLP
+      // Send the message to be processed by the NLP server
       let suggestionRequest = {
         command: 'parseMsg',
         id: this.player.chatId,
         isPartner: false,
         msg: message.content,
       };
-
-      // let evalRequest = {
-      //   command: 'parseEvalMsg',
-      //   id: this.player.chatId,
-      //   sessionId: this.player.gameStart + '-' + this.player.chatId,
-      //   isPartner: false,
-      //   msg: message.content
-      // }
-
       if (
-        this.player.gameStep == 'cheaptalk' &&
+        this.player.gameStep == 'mainChat' &&
         this.player.interventionMode != 'none'
       ) {
-        window.suggestionBox.send(JSON.stringify(suggestionRequest));
-      } else if (this.player.gameStep == 'verification') {
-        // Force longer responses to questions two and three
-        // if (this.player.totalMsgLength < 40 && (this.player.evaluationStep == 'Q1 - yes' || this.player.evaluationStep == 'Q1 - no - change mind' || this.player.evaluationStep == 'Q2' || this.player.evaluationStep == 'Q3') && !this.player.askedForMore) {
-        //   if (message.content.length + this.player.totalMsgLength >= 40) {
-        //     window.suggestionBox.send(JSON.stringify(evalRequest));
-        //   }
-        // } else if (this.player.evaluationStep != 'Q3') {
-        //   window.suggestionBox.send(JSON.stringify(evalRequest));
-        // }
+        window.nlpServer.send(JSON.stringify(suggestionRequest));
       }
+
+      // Reset reply suggestions
       this.showSuggestion = false;
+
+      // Send message
       this.$emit('onMsgSend', message);
-      // TODO: Do I need this?
-      // message.uploaded = true;
-    },
-    // when player chooses to use a chat suggestion
-    onSuggestionClick: function (message) {
-      // let m = this.player.messageTemplate;
-      // m.content = message;
-      // m.participantId = this.player.chatId;
-      // // same as onMessageSubmit
-      // this.messages.push(m);
-      // window.Breadboard.send("chat", { message: JSON.stringify(m) });
-      // setTimeout(() => {
-      //   m.uploaded = true;
-      // }, 2000);
-      return message; // TODO: remove?
     },
     onType(data) {
+      // Update character counter
       let dataLen = document.querySelector('.message-input').innerText.length;
       document.querySelector('#character-counter').innerText =
         dataLen + ' / 140';
 
       this.$emit('onType', data);
     },
-    // Suggestion box
+
+    // Reply suggestion functions
     editSuggestion() {
       this.showSuggestion = false;
       document.querySelector('.message-input').innerText = this.nlp.suggestion;
@@ -245,24 +175,16 @@ export default {
     chatParticipants() {
       return [...this.participants, { id: -999, name: '' }];
     },
-    // An object that matches the format expected by the vue-quick-chat component
     myself() {
       return {
         name: 'Me',
         id: this.player.chatId,
       };
-    },
-    // An array of all participants in the format that vue-quick-chat expects
-    // chatParticipants() {
-    //   let neighbors = [{id: -1, name: ''}]
-    //   for (let participant of this.player.neighborNodes) {
-    //     neighbors.push({id: participant.chatId, name: 'Partner'})
-    //   }
-    //   return neighbors
-    // }
+    }
   },
   watch: {
     player(val) {
+      // Keep track of messages
       const msgList = [];
 
       if (!val[this.msgSource]) {
@@ -275,11 +197,12 @@ export default {
         this.messages = msgList;
 
         if (msgList.length != this.messageCount && msgList.length > 0) {
-          // got a new message
+          // Got a new message!
 
           this.lastMsgReceived = new Date();
 
-          // Check if this is the prereq we need to show a suggestion
+          // Some reply suggestions have prerequisite messages
+          // Is this one of them?
           if (
             this.player.interventionMode != 'bot' &&
             this.player.interventionMode != 'none' &&
@@ -304,16 +227,19 @@ export default {
           }
 
           this.messageCount = msgList.length;
-          // check if we started scrolling
+
+          // Scroll to the latest message
           let el = document.querySelector('.container-message-display');
           this.isScrolling = el.scrollHeight - el.scrollTop != el.clientHeight;
 
           if (this.isScrolling) {
             document.querySelector('#new-msg-alert').className = '';
           }
+
           this.$nextTick(function () {
             this.conditionalScrollToBottom();
 
+            // Hide special characters?
             let tmpElem = document.createElement('textarea');
             document
               .querySelectorAll('.message-text p:not(:first-child)')
@@ -323,13 +249,12 @@ export default {
               });
             tmpElem.remove();
 
+            // Special UI for chatbot messages
             document
               .querySelectorAll('.other-message-body .message-username')
               .forEach((el) => {
                 if (el.innerText == 'Chatbot') {
                   el.closest('.message-text').classList.add('evaluator');
-                  // el.closest('.message-username').innerHTML = '<i class="fas fa-robot"></i>';
-                  // el.closest('.message-username').innerHTML = '<v-icon>mdi-send</v-icon>';
                 }
               });
           });
@@ -337,6 +262,7 @@ export default {
       }
     },
     nlp(val) {
+      // Reply suggestions
       if (val.suggestion) {
         if ('requiresPreceding' in val) {
           this.waitingForPreReq = true;
@@ -344,12 +270,13 @@ export default {
         } else {
           let suggestionDelay =
             val.id == 'greeting0' ||
-            val.id == 'greeting1' ||
-            val.id == 'greeting'
+              val.id == 'greeting1' ||
+              val.id == 'greeting'
               ? 15000
               : 1000;
 
           if (this.player.interventionMode == 'bot') {
+            // Automatically send the reply suggestion as a chatbot message
             let msg = {
               participantId: -1,
               content: this.nlp.suggestion,
@@ -360,6 +287,7 @@ export default {
               this.$emit('onMsgSend', msg);
             }, suggestionDelay);
           } else if (this.player.interventionMode != 'none') {
+            // Automatically send the reply suggestion if the timer elapses
             setTimeout(() => {
               this.showSuggestion = true;
 
@@ -379,6 +307,8 @@ export default {
     },
   },
   mounted() {
+
+    // Custom UI listing all chat participants
     let messageContainer = document.querySelector('.container-message-display');
     let joinMsgs = '';
     for (let participant of this.participants) {
@@ -397,10 +327,12 @@ export default {
     }
     messageContainer.insertAdjacentHTML('afterbegin', joinMsgs);
 
+    // Scroll to the bottom of the chat
     let cmd = document.querySelector('.container-message-display');
     cmd.scrollTop = cmd.scrollHeight;
     cmd.dispatchEvent(new CustomEvent('scroll'));
 
+    // Show new message alert
     document
       .querySelector('.container-message-display')
       .addEventListener('scroll', function (ev) {
@@ -411,6 +343,7 @@ export default {
         }
       });
 
+    // Don't prevent keyboard shortcuts
     document
       .querySelector('.message-input')
       .addEventListener('keydown', (ev) => {
@@ -432,7 +365,7 @@ export default {
 
     // Timer for requesting encouragement and farewell
     let suggestionRequestInterval = setInterval(() => {
-      if (this.player.gameStep != 'cheaptalk') {
+      if (this.player.gameStep != 'mainChat') {
         return;
       }
 
@@ -444,9 +377,8 @@ export default {
         this.player.interventionMode != 'none'
       ) {
         if (currentTime - this.lastMsgReceived > 1 * 60 * 1000) {
-          console.log('Asking for encouragement');
           this.requestedEncouragement = true;
-          window.suggestionBox.send(
+          window.nlpServer.send(
             JSON.stringify({
               command: 'requestEncouragement',
               id1: this.player.chatId,
@@ -465,11 +397,10 @@ export default {
             (this.player.chatTime * 60 + this.player.chatStartTime) * 1000
           )
         );
-        // console.log(endTime);
+
         if (endTime - currentTime < 2 * 60 * 1000) {
-          console.log('Asking for farewell');
           this.requestedFarewell = true;
-          window.suggestionBox.send(
+          window.nlpServer.send(
             JSON.stringify({
               command: 'requestFarewell',
               id1: this.player.chatId,
@@ -489,15 +420,19 @@ export default {
 .quick-chat-container {
   height: 30em;
 }
+
 .quick-chat-container .container-message-display .message-container {
   flex-wrap: nowrap;
 }
+
 .container-send-message {
   display: flex;
 }
+
 .container-send-message svg {
   vertical-align: bottom;
 }
+
 .container-send-message span {
   line-height: 1em;
 }
@@ -506,7 +441,8 @@ export default {
 .quick-chat-container .header-container {
   display: none;
 }
-.quick-chat-container .container-message-display .message-text > p {
+
+.quick-chat-container .container-message-display .message-text>p {
   font-size: 0.95rem;
   line-height: 1.5em;
 }
@@ -515,9 +451,11 @@ export default {
   padding-left: 1em;
   color: #868686;
 }
+
 .container-message-display {
   padding-top: 0.5em;
 }
+
 .evaluator {
   background: #8b8b8b !important;
   color: #fff !important;
@@ -532,12 +470,15 @@ export default {
   color: #999;
   z-index: 0;
 }
+
 .quick-chat-container .container-message-manager {
   padding: 2.5rem 1rem;
 }
+
 .quick-chat-container {
   position: relative;
 }
+
 #new-msg-alert {
   position: absolute;
   bottom: 4.5rem;
@@ -551,6 +492,7 @@ export default {
   border-radius: 4px;
   cursor: pointer;
 }
+
 .hide-alert {
   display: none;
 }
@@ -562,6 +504,7 @@ export default {
   position: relative;
   /* display: none; * Disabled for now */
 }
+
 .suggestions::before {
   content: 'Suggested replies:';
   position: absolute;

@@ -1,7 +1,19 @@
+/*
+ * Filename: FunctionsGrouping.groovy
+ * Author: Elijah Claggett
+ * Date: October 19, 2023
+ *
+ * Description:
+ * This Groovy script defines functions used to assign participants "identity groups" and make pairs.
+ */
+
 import java.util.*
 
+// Groovy will cast this to the wrong type; must initialize as a LinkedHashMap
+// We also can't define them with a type on the left side of equals or else Groovy will scope them incorrectly
 playerPassEval = new LinkedHashMap<Integer,Integer>()
 
+// Calculate median
 def median(data) {
   def copy = data.sort()
   def middle = data.size().intdiv(2)
@@ -9,6 +21,7 @@ def median(data) {
   data.size() % 2 ? copy[middle] : (copy[middle - 1] + copy[middle]) / 2
 }
 
+// Set a participant as leftover if we couldn't assign a partner
 def setIsLeftover(chatId) {
   def player = g.V.find { v-> v.chatId == chatId }
   player.qualified = false
@@ -26,6 +39,7 @@ def setIsLeftover(chatId) {
   Param.numPlayers--
 }
 
+// Find the index and value of the max element in a list
 // Prefer stronger opinions
 // If multiple answers have the same opinion difference, pick randomly
 def maxWithIdx(data, exclude = []) {
@@ -61,6 +75,7 @@ def maxWithIdx(data, exclude = []) {
   return [idx, val]
 }
 
+// Find the index and value of the min element in a list
 // Prefer stronger opinions
 // If multiple answers have the same opinion difference, pick randomly
 def minWithIdx(data, exclude = []) {
@@ -96,6 +111,8 @@ def minWithIdx(data, exclude = []) {
   return [idx, val]
 }
 
+// Find the topic that these two players differ by exactly "diff" on
+// (i.e. diff=0 is maximum agreement, diff=6 is maximum disagreement)
 def ensureBestTopic(answers, playerKey, partnerKey, diff) {
   def p1Answers = answers[playerKey]
   def p2Answers = answers[partnerKey]
@@ -164,7 +181,8 @@ def ensureBestTopic(answers, playerKey, partnerKey, diff) {
   }
 }
 
-// Ensure this is an optimal pair
+// Find a partner that has an opinion difference of exactly "diff" with this participant on any topic
+// (i.e. diff=0 is maximum agreement, diff=6 is maximum disagreement)
 def ensureBestPartner(answers, diffs, playerKey, diff, exclude) {
   def eligiblePartners = []
   def eligiblePartnerTopics = []
@@ -203,9 +221,9 @@ def ensureBestPartner(answers, diffs, playerKey, diff, exclude) {
 }
 
 // Must initialize these as a Java map otherwise Groovy doesn't interpret them correctly
-// Yet, we also can't define them with a type or else Groovy will scope them incorrectly
+// We also can't define them with a type on the left side of equals or else Groovy will scope them incorrectly
 pairs = new LinkedHashMap<Integer,Integer>()
-pairTypes = new LinkedHashMap<Integer,Integer>() // 0=ingroup, 1=outgroup
+playerGroups = new LinkedHashMap<Integer,Integer>() // 0=ingroup, 1=outgroup
 pairTopics = new LinkedHashMap<Integer,Integer>()
 
 playerAnswers = new LinkedHashMap<Integer,ArrayList<Integer>>()
@@ -221,8 +239,8 @@ def makeOutGroupPairs(dist, pId) {
 
   pairs[pId] = mxPartner
   pairs[mxPartner] = pId
-  pairTypes[pId] = 0
-  pairTypes[mxPartner] = 1
+  playerGroups[pId] = 0
+  playerGroups[mxPartner] = 1
 
   pairTopics[pId] = topic
   pairTopics[mxPartner] = topic
@@ -236,8 +254,8 @@ def makeInGroupPairs(dist, pId) {
 
   pairs[pId] = mnPartner
   pairs[mnPartner] = pId
-  pairTypes[pId] = 0
-  pairTypes[mnPartner] = 0
+  playerGroups[pId] = 0
+  playerGroups[mnPartner] = 0
 
   pairTopics[pId] = topic
   pairTopics[mnPartner] = topic
@@ -262,21 +280,22 @@ def makeRemaingRandomPairs() {
     pairs[mnPartner] = entry.key
 
     def thisPairType = (int) Math.round(Math.random())
-    pairTypes[entry.key] = 0
-    pairTypes[mnPartner] = 1
+    playerGroups[entry.key] = 0
+    playerGroups[mnPartner] = 1
 
     pairTopics[entry.key] = topic
     pairTopics[mnPartner] = topic
   }
 }
 
-chooseGroupingPreference = { player, data ->
+// Executed each time a participant submits an answer to the intial survey
+answerInitialSurvey = { player, data ->
   def idx = data[0]
   def answer = data[1]
 
-  player.groupingPreferences[idx] = answer
+  player.initalSurveyAnswers[idx] = answer
 
-  a.addEvent('chooseGroupingPreference', [
+  a.addEvent('answerInitialSurvey', [
     data: Param.jsonGen.toJson([
             idx: idx,
             answer: answer,
@@ -285,9 +304,10 @@ chooseGroupingPreference = { player, data ->
     ])
 }
 
-completeGrouping = { thisPlayer, key ->
+// Executed when a participant finishes the initial survey
+completeInitialSurvey = { thisPlayer, key ->
   thisPlayer.groupingComplete = true
-  a.addEvent('completedGrouping', [
+  a.addEvent('completedInitialSurvey', [
     data: Param.jsonGen.toJson([
             playerId: thisPlayer.chatId
           ])
@@ -296,6 +316,7 @@ completeGrouping = { thisPlayer, key ->
   Param.numGroupingFinished++
 }
 
+// Executed after the experiment waiting time elapses
 calculateGroups = {
   g.V.each { player ->
     if (!player.qualified && !player.finished) {
@@ -318,7 +339,7 @@ calculateGroups = {
   // Store all player answers for easy computation
   g.V.each { player ->
     if (player.qualified) {
-      def p = player.groupingPreferences
+      def p = player.initalSurveyAnswers
       playerPassEval[player.chatId] = player.passEval
       playerAnswers[player.chatId] = [p[0], p[1], p[2], p[3], p[4], p[5], p[6]]
     }
@@ -368,7 +389,6 @@ calculateGroups = {
       if (!success) { success = makeOutGroupPairs(5, entry.key) }
       if (!success) { success = makeOutGroupPairs(4, entry.key) }
       if (!success) { success = makeOutGroupPairs(3, entry.key) }
-      // if (!success) { success = makeOutGroupPairs(2, entry.key) }
 
       if (!success) {
         pairType = 0
@@ -386,33 +406,8 @@ calculateGroups = {
       if (!success) { success = makeOutGroupPairs(5, entry.key) }
       if (!success) { success = makeOutGroupPairs(4, entry.key) }
       if (!success) { success = makeOutGroupPairs(3, entry.key) }
-      // if (!success) { success = makeOutGroupPairs(2, entry.key) }
     }
   }
-
-  // if (Param.prioritizeType == 'outgroup') {
-  //   // prioritize maximally different outgroup pairs, then maximally similar ingroup pairs
-  //   makeOutGroupPairs(6);
-  //   makeOutGroupPairs(5);
-  //   makeOutGroupPairs(4);
-  //   makeOutGroupPairs(3);
-  //   makeOutGroupPairs(2);
-
-  //   if (Param.platform == 'prolific') {
-  //     makeInGroupPairs(0);
-  //     makeInGroupPairs(1);
-  //   }
-  // } else {
-  //   // prioritize maximally similar ingroup pairs, then maximally different outgroup pairs then
-  //   makeInGroupPairs(0);
-  //   makeInGroupPairs(1);
-
-  //   // Only make in-group pairs
-  //   // makeOutGroupPairs(6);
-  //   // makeOutGroupPairs(5);
-  //   // makeOutGroupPairs(4);
-  // }
-  // makeRemaingRandomPairs();
 
   // Setup pairs
   def edges = []
@@ -420,7 +415,7 @@ calculateGroups = {
     if (player.qualified) {
       def partner = g.V.find { v-> v.chatId == pairs[player.chatId] }
       if (partner != null) {
-        def pairType = pairTypes[player.chatId]
+        def playerGroup = playerGroups[player.chatId]
 
         player.topic = pairTopics[player.chatId]
         a.addEvent('setTopic', [
@@ -430,21 +425,24 @@ calculateGroups = {
             ])
           ])
 
-        if (pairType == 0) {
-          // Intragroup
+        // In-group pairs will both be playerGroup==0
+        // Out-group pairs have one partner playerGroup==0 and one partner playerGroup==1
+        if (playerGroup == 0) {
+          // In group
           player.groupName = 'Violet Group'
           player.groupImage = 'group0.png'
           player.groupLabel = 'V'
           player.groupColor = 'violet'
           player.groupId = 0
         } else {
-          // Intergroup
+          // Out group
           player.groupName = 'Orange Group'
           player.groupImage = 'group1.png'
           player.groupLabel = 'Y'
           player.groupColor = 'yellow'
           player.groupId = 1
         }
+
         a.addEvent('setGroup', [
           data: Param.jsonGen.toJson([
               playerId: player.chatId,
@@ -464,11 +462,15 @@ calculateGroups = {
               neighborId: partner.chatId
             ])
           ])
-        partner.neighborNodes.add(['chatId': player.chatId, 'groupName': player.groupName, 'groupImage': player.groupImage, 'groupLabel': player.groupLabel, 'groupColor': player.groupColor, 'groupId': player.groupId,  'groupingPreferences': player.groupingPreferences, 'groupingFactors': player.groupingFactors])
+
+        partner.neighborNodes.add(['chatId': player.chatId, 'groupName': player.groupName, 'groupImage': player.groupImage, 'groupLabel': player.groupLabel, 'groupColor': player.groupColor, 'groupId': player.groupId,  'initalSurveyAnswers': player.initalSurveyAnswers, 'groupingFactors': player.groupingFactors])
       }
     }
   }
 
+
+  // If a participant hasn't been assigned a conversation topic by now, they have been unable to be paired
+  // End the experiment for those participants 
   g.V.each { player ->
     if (player.qualified) {
       if (player.topic == -1) {
@@ -484,8 +486,8 @@ calculateGroups = {
   timer.runAfter(30 * 1000) {
     g.V.each { player ->
       if (player.gameStep == 'tutorial2') {
-        player.gameStep = 'cheaptalk'
-        startCheapTalk(player)
+        player.gameStep = 'mainChat'
+        startMainChat(player)
       }
     }
   }

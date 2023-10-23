@@ -1,3 +1,4 @@
+<!-- Experiment consent form -->
 <template>
   <v-col class="push-10 center" cols="10" md="6">
     <div class="text--primary">
@@ -5,10 +6,8 @@
       <h3 class="pt-4 pb-4">
         Please read the following information. When you give your consent, you
         can proceed to the task.
-        <span v-if="player.platform == 'prolific'"
-          >In this consent form, we refer to the current study as a Human
-          Intelligence Task (HIT).</span
-        >
+        <span v-if="player.platform == 'prolific'">In this consent form, we refer to the current study as a Human
+          Intelligence Task (HIT).</span>
       </h3>
       <p>
         This game is part of a research study conducted by Carnegie Mellon
@@ -125,21 +124,11 @@
         copy of this consent form for your records.
       </p>
 
-      <v-radio-group
-        v-for="q in questions"
-        v-bind:key="q.key"
-        :label="q.label"
-        v-model="q.model"
-      >
+      <v-radio-group v-for="q in questions" v-bind:key="q.key" :label="q.label" v-model="q.model">
         <template v-slot:label>
           <h3 class="mb-0">{{ q.label }}</h3>
         </template>
-        <v-radio
-          v-bind:key="q.key + '-' + o.value"
-          v-for="o in q.options"
-          :label="o.label"
-          :value="o.value"
-        ></v-radio>
+        <v-radio v-bind:key="q.key + '-' + o.value" v-for="o in q.options" :label="o.label" :value="o.value"></v-radio>
       </v-radio-group>
       <!-- <v-btn :disabled="!formValid" @click="submitForm">Next</v-btn> -->
     </div>
@@ -244,38 +233,10 @@ export default {
     },
     clickDone() {
       this.validateConsentForm();
-      Breadboard.send('completeConsent');
     },
   },
 
   computed: {
-    optionA() {
-      return this.player.groupingType == 'value' ? 'Statement A' : 'Picture A';
-    },
-    optionB() {
-      return this.player.groupingType == 'value' ? 'Statement B' : 'Picture B';
-    },
-    valuesOrPreferences() {
-      return this.player.groupingType == 'value' ? 'values' : 'preferences';
-    },
-    pairingOption() {
-      return this.player.groupingType == 'value'
-        ? 'statement you agree with more'
-        : 'painting you like more';
-    },
-    question() {
-      return this.player.groupingType == 'value'
-        ? 'How do you feel about the concept of "global warming"? Regarding it, what do you think U.S. policy should be?'
-        : 'What makes a painting beautiful? How do you decide what is beautiful?';
-    },
-    maxBonus() {
-      return this.player.completionBonus * 2;
-    },
-    discussionTopic() {
-      return this.player.groupingType == 'value'
-        ? 'global warming'
-        : 'the beauty of paintings';
-    },
     basePay() {
       return this.player.platform == 'prolific'
         ? this.player.prolificTask1Pay
@@ -303,9 +264,7 @@ export default {
     platform(val) {
       return val == 'mturk' ? 'Amazon Mechanical Turk' : 'Prolific';
     },
-  },
-
-  watch: {},
+  }
 };
 </script>
 

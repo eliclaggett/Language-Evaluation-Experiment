@@ -1,9 +1,8 @@
+<!-- Finish! Explain the final payment -->
 <template>
   <v-col class="push-10 center" xl="3" lg="4" md="6" sm="8">
     <v-col class="center" xl="6" lg="8" md="10" sm="6">
-      <v-img
-        :src="require(`../assets/undraw_happy_announcement_re_tsm0.svg`)"
-      ></v-img>
+      <v-img :src="require(`../assets/undraw_happy_announcement_re_tsm0.svg`)"></v-img>
     </v-col>
     <h1 class="text-center">Thank you for participating!</h1>
     <div v-if="player.bonusOption == 2 && player.partnerBonusOption == -1">
@@ -20,7 +19,6 @@
             <td>Completion Bonus</td>
             <td>?</td>
           </tr>
-          <!-- <tr><td>Contribution</td><td>&minus;&nbsp;{{player.donated | money}}</td></tr> -->
           <tr class="sum">
             <td>Subtotal</td>
             <td>{{ finalPay | money }}</td>
@@ -45,7 +43,6 @@
             <td>Completion Bonus</td>
             <td>{{ bonusPay | money }}</td>
           </tr>
-          <!-- <tr><td>Contribution</td><td>&minus;&nbsp;{{player.donated | money}}</td></tr> -->
           <tr class="sum">
             <td>Total</td>
             <td>{{ finalPay | money }}</td>
@@ -55,26 +52,14 @@
       <p>
         <b>{{ partnerChoiceExplanation }}</b>
       </p>
-      <!-- <v-col align="center">
-            <table class="receipt mt-2 mb-6">
-              <tr><td>Subtotal</td><td>{{finalPay | money}}</td></tr>
-              <tr><td>Shared pot payout</td><td>{{sharedPotPayout | money}}</td></tr>
-              <tr class="sum"><td>Total</td><td>{{finalAfterReceived | money}}</td></tr>
-            </table>
-          </v-col> -->
       <div v-if="player.platform == 'mturk'">
         <p>Please click "Submit HIT" when you are ready.</p>
-        <div
-          v-html="player.submit"
-          v-if="player.submit"
-          class="submitHit text-center mt-6"
-        ></div>
+        <div v-html="player.submit" v-if="player.submit" class="submitHit text-center mt-6"></div>
       </div>
       <div v-if="player.platform == 'prolific'">
         <p>
           Please submit this Completion Code when you are ready:<br />
-          <strong class="completioncode">{{ player.completionCode }}</strong
-          ><br />
+          <strong class="completioncode">{{ player.completionCode }}</strong><br />
           We will pay the difference between your total earnings and the base
           pay separately after you submit this code.
         </p>
@@ -90,26 +75,15 @@
       <br /><br />
     </v-form>
     <p class="mt-4">
-      For other comments or questions, please contact us at cmu.hcii.slab<span
-        class="block-spam"
-        aria-hidden="true"
-        >spam</span
-      >@gmail.com
+      For other comments or questions, please contact us at cmu.hcii.slab<span class="block-spam"
+        aria-hidden="true">spam</span>@gmail.com
     </p>
     <p class="credits">
       Image Credits:<br />
-      <a
-        href="https://www.flaticon.com/free-icons/fist-bump"
-        target="_blank"
-        title="fist bump icons"
-        >Fist bump icons created by Freepik - Flaticon</a
-      ><br />
-      <a
-        href="https://www.flaticon.com/free-icons/shake-hands"
-        target="_blank"
-        title="shake hands icons"
-        >Shake hands icons created by Flat Icons - Flaticon</a
-      >
+      <a href="https://www.flaticon.com/free-icons/fist-bump" target="_blank" title="fist bump icons">Fist bump icons
+        created by Freepik - Flaticon</a><br />
+      <a href="https://www.flaticon.com/free-icons/shake-hands" target="_blank" title="shake hands icons">Shake hands
+        icons created by Flat Icons - Flaticon</a>
     </p>
   </v-col>
 </template>
@@ -118,26 +92,25 @@
 /* global Breadboard */
 
 export default {
+
   name: 'EndStep',
-  // watch: {
-  //   player(val) {
-  //     console.log(val.submit);
-  //   }
-  // },
 
   mounted() {
+
+    // For some reason, the button styles don't always load on their own
     document.querySelectorAll('button').forEach((el) => {
       el.className =
         'v-btn v-btn--is-elevated v-btn--has-bg theme--light v-size--default';
     });
 
     document.addEventListener('submit', (ev) => {
+      // Prevent default submit action
+      // Record "submitted hit" action with Breadboard
+      // Then submit
       ev.preventDefault();
       let formData = new FormData(ev.target);
-
       var object = {};
       formData.forEach((value, key) => {
-        // Reflect.has in favor of: object.hasOwnProperty(key)
         if (!Reflect.has(object, key)) {
           object[key] = value;
           return;
@@ -172,6 +145,7 @@ export default {
 
   methods: {
     submitFeedback() {
+      // Record participants' feedback
       var data = {};
       data.feedback = this.feedback;
       document.querySelector('#sendBtn').classList.add('success');
@@ -221,36 +195,13 @@ export default {
       }
       return '';
     },
-    sharedPotTotal() {
-      return (
-        Math.floor((this.player.donated + this.player.received) * 150) / 100
-      );
-    },
-    sharedPotPayout() {
-      return (
-        Math.floor((this.player.donated + this.player.received) * 75) / 100
-      );
-    },
-    finalAfterReceived() {
-      let sharedPotPayout =
-        Math.floor((this.player.donated + this.player.received) * 75) / 100;
-      return (
-        this.player.basePay +
-        this.player.completionBonus -
-        this.player.donated +
-        sharedPotPayout
-      );
-    },
-    currentOrPrevious() {
-      return this.player.received == -1 ? 'current' : 'pre-donation';
-    },
     remainingTime() {
       if (this.player.surveyStartTime) {
         var curTime = Date.now() + this.player.utcOffset;
         var endTime =
           (this.player.surveyStartTime +
             this.player.surveyTime * 60 +
-            this.player.donationTime * 60) *
+            this.player.cooperationTime * 60) *
           1000;
 
         var diff = (endTime - curTime) / 1000;
@@ -282,25 +233,25 @@ export default {
 .credits a {
   color: #000 !important;
 }
+
 .credits {
   opacity: 0.3;
 }
+
 .receipt {
   border-collapse: collapse;
 }
+
 .receipt td:last-child {
   text-align: right;
   padding-left: 1em;
 }
+
 .sum td {
   border-top: solid 1px #000;
   font-weight: bold;
 }
-.submitHit form {
-  /* display: flex;
-  flex-direction: column;
-  align-items: center; */
-}
+
 .submitHit textarea {
   border: solid 1px #ccc;
   border-radius: 4px;

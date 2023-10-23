@@ -1,5 +1,73 @@
+/*
+ * Filename: FunctionsChat.groovy
+ * Author: Elijah Claggett
+ * Date: October 19, 2023
+ *
+ * Description:
+ * This Groovy script defines auxilliary administrative functions used to control the Breadboard experiment.
+ */
+
 import java.time.Instant
 
+def generateEvaluatorMessage(text) {
+  // Send a message from the chatbot "evaluator"
+  // content, participantId, type (text), timestamp (iso 8601 -05:00), uploaded, viewed, myself
+  def msgTemplate = [
+                participantId: -1,
+                content: '',
+                timestamp: '',
+                uploaded: true,
+                viewed: false,
+                myself: false,
+                type: 'text'
+            ]
+  msgTemplate.content = text
+  msgTemplate.timestamp = Instant.now().toString()
+  return Param.jsonGen.toJson(msgTemplate)
+}
+def generatePartnerMessage(text) {
+  // Send a message from the chatbot "partner"
+  // content, participantId, type (text), timestamp (iso 8601 -05:00), uploaded, viewed, myself
+  def msgTemplate = [
+                participantId: 999,
+                content: '',
+                timestamp: '',
+                uploaded: true,
+                viewed: false,
+                myself: false,
+                type: 'text'
+            ]
+  msgTemplate.content = text
+  msgTemplate.timestamp = Instant.now().toString()
+  return Param.jsonGen.toJson(msgTemplate)
+}
+
+// End the experiment if one of the conversation partners becomes inactive
+def endExperimentChatTimeout(v) {
+  v.qualified = false
+  v.finished = true
+  v.gameStep = 'timeout'
+  if (Param.talkTimers[v.chatId]) { Param.talkTimers[v.chatId].cancel() }
+  def bonus = 0
+  def reason = 'chat timeout'
+  def comments = false
+  v.submit = g.getSubmitForm(v, bonus, reason, Param.sandbox, comments)
+  v.neighbors.each { n ->
+    n.qualified = false
+    n.finished = true
+    if (Param.talkTimers[n.chatId]) { Param.talkTimers[n.chatId].cancel() }
+    n.gameStep = 'timeout'
+    bonus = 0
+    n.submit = g.getSubmitForm(n, bonus, reason, Param.sandbox, comments)
+    a.addEvent('end_experiment', [
+      data: Param.jsonGen.toJson([
+              playerId: n.chatId,
+            ])
+      ])
+  }
+}
+
+// Stagger sending multiple chatbot "evaluator" messages
 // Delay in seconds
 sendEvaluatorMessagesWithDelay = { player, step, msgs, delay ->
   def timer = new Timer()
@@ -19,6 +87,8 @@ sendEvaluatorMessagesWithDelay = { player, step, msgs, delay ->
   } as TimerTask, delay * 1000, delay * 1000)
 }
 
+// Stagger sending multiple chatbot "partner" messages
+// Delay in seconds
 sendPartnerMessagesWithDelay = { player, step, msgs, delay ->
   def timer = new Timer()
 
@@ -37,9 +107,9 @@ sendPartnerMessagesWithDelay = { player, step, msgs, delay ->
   } as TimerTask, delay * 1000, delay * 1000)
 }
 
-
+// Schedule the next pre-evaluation chatbot message
 scheduleEvalMessage = { player, delay ->
-  if (player.gameStep != 'verification') { return }
+  if (player.gameStep != 'preEval') { return }
 
   def timer = new Timer()
 
@@ -58,72 +128,45 @@ scheduleEvalMessage = { player, delay ->
   }
 }
 
-
+// Introduce the main chat topics
 startTopicDiscussion = { player ->
   def chatStartTime = Instant.now().epochSecond
   player.chatStartTime = chatStartTime
-  
-  if (true /* Use concrete example for all topics */) {
 
-    // Schedule prompts
-    sendEvaluatorMessagesWithDelay(player, 'chat', [
-        'Welcome to the chat room! Please discuss your opinions about the following news story.',
-        Param.customExamples[player.topic]
-        ], 1)
-    
-    sendEvaluatorMessagesWithDelay(player, 'chat', [
+  // Schedule prompts
+  sendEvaluatorMessagesWithDelay(player, 'chat', [
+      'Welcome to the chat room! Please discuss your opinions about the following news story.',
+      Param.customExamples[player.topic]
+      ], 1)
+  
+  sendEvaluatorMessagesWithDelay(player, 'chat', [
+    Param.customPrompts[player.topic]
+    ], 60 * Param.topicDelay)
+
+  sendEvaluatorMessagesWithDelay(player, 'chat', [
+    Param.customFollowups[player.topic]
+    ], 60 * (Param.topicDelay + Param.followupDelay))
+
+  player.neighbors.each { v ->
+    v.chatStartTime = chatStartTime
+
+    // Schedule prompts for partner
+    sendEvaluatorMessagesWithDelay(v, 'chat', [
+      'Welcome to the chat room! Please discuss your opinions about the following news story.',
+      Param.customExamples[player.topic]
+      ], 1)
+  
+    sendEvaluatorMessagesWithDelay(v, 'chat', [
       Param.customPrompts[player.topic]
       ], 60 * Param.topicDelay)
 
-    sendEvaluatorMessagesWithDelay(player, 'chat', [
+    sendEvaluatorMessagesWithDelay(v, 'chat', [
       Param.customFollowups[player.topic]
       ], 60 * (Param.topicDelay + Param.followupDelay))
-
-    player.neighbors.each { v ->
-      v.chatStartTime = chatStartTime
-
-      // Schedule prompts for partner
-      sendEvaluatorMessagesWithDelay(v, 'chat', [
-        'Welcome to the chat room! Please discuss your opinions about the following news story.',
-        Param.customExamples[player.topic]
-        ], 1)
-    
-      sendEvaluatorMessagesWithDelay(v, 'chat', [
-        Param.customPrompts[player.topic]
-        ], 60 * Param.topicDelay)
-
-      sendEvaluatorMessagesWithDelay(v, 'chat', [
-        Param.customFollowups[player.topic]
-        ], 60 * (Param.topicDelay + Param.followupDelay))
-    }
-
-  } else {
-    // Schedule prompts (no example)
-    sendEvaluatorMessagesWithDelay(player, 'chat', [
-        'Welcome to the chat room! Please discuss your opinions about the following topic.',
-        Param.customPrompts[player.topic]
-        ], 1)
-
-    sendEvaluatorMessagesWithDelay(player, 'chat', [
-      Param.customFollowups[player.topic]
-      ], 60 * Param.followupDelay)
-
-    player.neighbors.each { v ->
-      v.chatStartTime = chatStartTime
-
-      // Schedule prompts for partner (no example)
-      sendEvaluatorMessagesWithDelay(v, 'chat', [
-        'Welcome to the chat room! Please discuss your opinions about the following topic.',
-        Param.customPrompts[player.topic]
-        ], 1)
-
-      sendEvaluatorMessagesWithDelay(v, 'chat', [
-        Param.customFollowups[player.topic]
-        ], 60 * Param.followupDelay)
-    }
   }
 }
 
+// Introduce the discussion about cooperation options
 startCooperationDiscussion = { player ->
   def currentSecond = Instant.now().epochSecond
   def timer = new Timer()
@@ -135,12 +178,10 @@ startCooperationDiscussion = { player ->
       return;
     }
     player.gameStep = 'survey'
-    // player.displayNeighborNodes = false
     player.surveyStartTime = Instant.now().epochSecond
 
     player.neighbors.each { v ->
       v.gameStep = 'survey'
-      // player.displayNeighborNodes = false
       v.surveyStartTime = Instant.now().epochSecond
       Param.surveyTimers[v.chatId] = timer.runAfter((Param.surveyTime * 60 * 1000) as int) {
         forceFinishSurvey(v)
@@ -170,7 +211,8 @@ startCooperationDiscussion = { player ->
   }
 }
 
-startCheapTalk = { player ->
+// Start chat step
+startMainChat = { player ->
   a.addEvent('startChat', [
         data: Param.jsonGen.toJson([
                 playerId: player.chatId
@@ -180,7 +222,7 @@ startCheapTalk = { player ->
   // Start timer when both partners have clicked continue
   def readyToStart = true
   player.neighbors.each { v ->
-        if (v.gameStep != 'cheaptalk') { readyToStart = false }
+        if (v.gameStep != 'mainChat') { readyToStart = false }
   }
 
   if (readyToStart) {
@@ -194,9 +236,5 @@ startCheapTalk = { player ->
     }
   }
   
-  player.gameStep = 'cheaptalk'
-}
-
-switchRoles = { player ->
-  player.chatTurn = !player.chatTurn
+  player.gameStep = 'mainChat'
 }

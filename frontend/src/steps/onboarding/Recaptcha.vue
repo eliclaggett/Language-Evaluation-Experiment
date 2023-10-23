@@ -1,15 +1,13 @@
+<!-- Google reCAPTCHA V2 -->
 <template>
   <v-container class="col-sm-6 push-10">
     <v-col align="center">
-      <v-img
-        :src="require(`../assets/undraw_welcome_cats_thqn.svg`)"
-        width="500"
-        center
-      ></v-img>
+      <v-img :src="require(`../assets/undraw_welcome_cats_thqn.svg`)" width="500" center></v-img>
       <p class="pt-4 pb-4" v-if="player.platform == 'mturk'">
         Ready to chat? Complete the captcha to start the pre-evaluation.
       </p>
       <p class="pt-4 pb-4" v-if="player.platform == 'prolific'">
+        <!-- Don't use the word pre-evaluation on Prolific -->
         Ready to chat? Complete the captcha to start the first task.
       </p>
       <div id="recaptcha"></div>
