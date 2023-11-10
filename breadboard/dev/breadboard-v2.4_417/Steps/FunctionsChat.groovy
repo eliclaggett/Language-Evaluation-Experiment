@@ -196,7 +196,7 @@ startCooperationDiscussion = { player ->
   sendEvaluatorMessagesWithDelay(player, 'chat', [
     'Times up! Thank you for discussing your opinions.',
     'Now, you have a few minutes to discuss which bonus option you will pick.',
-    'There are two choices. The default bonus will add $' + Param.completionBonus + ' to the base pay for this HIT. You may also choose the double bonus option to receive $' + Param.mutualCompletionBonus +' instead.',
+    'There are two choices. The default bonus will add $' + Param.completionBonus + ' to the base pay for this study. You may also choose the double bonus option to receive $' + Param.mutualCompletionBonus +' instead.',
     "But, if you select the double bonus option and your partner doesn't, you will only get the base pay."
     ], 2)
 
@@ -205,7 +205,7 @@ startCooperationDiscussion = { player ->
     sendEvaluatorMessagesWithDelay(v, 'chat', [
     'Times up! Thank you for discussing your opinions.',
     'Now, you have a few minutes to discuss which bonus option you will pick.',
-    'There are two choices. The default bonus will add $' + Param.completionBonus + ' to the base pay for this HIT. You may also choose the double bonus option to receive $' + Param.mutualCompletionBonus +' instead.',
+    'There are two choices. The default bonus will add $' + Param.completionBonus + ' to the base pay for this study. You may also choose the double bonus option to receive $' + Param.mutualCompletionBonus +' instead.',
     "But, if you select the double bonus option and your partner doesn't, you will only get the base pay."
     ], 2)
   }

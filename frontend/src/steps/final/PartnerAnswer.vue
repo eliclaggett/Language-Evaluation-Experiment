@@ -32,7 +32,7 @@
 
 <script>
 /* global Breadboard */
-import LikertQuestion from '../components/LikertQuestion.vue';
+import LikertQuestion from '../../components/LikertQuestion.vue';
 
 export default {
   name: 'PartnerAnswerStep',

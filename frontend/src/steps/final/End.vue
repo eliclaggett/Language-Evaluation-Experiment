@@ -2,7 +2,7 @@
 <template>
   <v-col class="push-10 center" xl="3" lg="4" md="6" sm="8">
     <v-col class="center" xl="6" lg="8" md="10" sm="6">
-      <v-img :src="require(`../assets/undraw_happy_announcement_re_tsm0.svg`)"></v-img>
+      <v-img :src="require(`@/assets/undraw_happy_announcement_re_tsm0.svg`)"></v-img>
     </v-col>
     <h1 class="text-center">Thank you for participating!</h1>
     <div v-if="player.bonusOption == 2 && player.partnerBonusOption == -1">
@@ -53,15 +53,15 @@
         <b>{{ partnerChoiceExplanation }}</b>
       </p>
       <div v-if="player.platform == 'mturk'">
-        <p>Please click "Submit HIT" when you are ready.</p>
+        <p>Please click "Submit Study" when you are ready.</p>
         <div v-html="player.submit" v-if="player.submit" class="submitHit text-center mt-6"></div>
       </div>
       <div v-if="player.platform == 'prolific'">
         <p>
           Please submit this Completion Code when you are ready:<br />
-          <strong class="completioncode">{{ player.completionCode }}</strong><br />
-          We will pay the difference between your total earnings and the base
-          pay separately after you submit this code.
+          <strong class="completioncode">{{ player.prolificCompletionCodes[player.whichCompletionCode] }}</strong><br />
+          <b>We will pay the difference between your total earnings and the base
+          pay separately after you submit this code.</b>
         </p>
       </div>
     </div>
@@ -186,12 +186,12 @@ export default {
     },
     partnerChoiceExplanation() {
       if (this.player.partnerBonusOption == 1 && this.player.bonusOption == 2) {
-        return 'Your partner selected the default bonus option. Therefore, you will not receive a completion bonus for this HIT';
+        return 'Your partner selected the default bonus option. Therefore, you will not receive a bonus payment for this study';
       } else if (
         this.player.partnerBonusOption == 2 &&
         this.player.bonusOption == 2
       ) {
-        return 'Good news! Your partner also chose the extra bonus option!';
+        return 'Great news! Your partner also chose the extra bonus option!';
       }
       return '';
     },

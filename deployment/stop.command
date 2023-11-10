@@ -9,8 +9,8 @@ fi
 
 ssh -i ./server.pem -tt $SERVER_SSH << HERE
  bash
- cd $EXPERIMENT_DIR
- ./cleanup.sh
+ cd $PROD_EXPERIMENT_DIR
+ ./stop.sh
  exit
  exit
 HERE

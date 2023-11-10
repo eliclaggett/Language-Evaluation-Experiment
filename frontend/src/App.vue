@@ -19,7 +19,7 @@
     </div>
     <v-main v-if="!browserCompatible">
       <h2 class="pa-10 text-center">
-        Your browser is incompatible. Please return this HIT.
+        Your browser is incompatible. Please return the study.
       </h2>
     </v-main>
 
@@ -147,6 +147,7 @@ export default {
       nlp: {},
       playerState: '',
       connectedToNLP: false,
+      sentEvalScoreRequest: false,
     };
   },
 
@@ -167,8 +168,9 @@ export default {
   methods: {
     connectToNLP() {
       // Establish a separate connection with an NLP server that analyzes message content
-
+      console.log('Attempting to establish connection with NLP server');
       if (this.player.nlpPort === undefined) {
+        console.log('NLP: Port is undefined');
         return;
       }
 
@@ -180,13 +182,14 @@ export default {
         nlpServerURL =
           'wss://' + window.location.hostname + ':' + this.player.nlpPort;
       }
+      console.log('NLP server URL: ' + nlpServerURL)
 
       window.nlpServer = new WebSocket(nlpServerURL);
 
       window.nlpServer.onopen = () => {
         // Yay! Successful connection
         this.connectedToNLP = true;
-
+        console.log('Connection successfully established with NLP server');
         // Occassionally ping the server to prevent the connection from closing
         window.nlpInterval = setInterval(() => {
           if (window.nlpServer instanceof WebSocket) {
@@ -268,11 +271,14 @@ export default {
         }
       }
 
+      this.player = player;
       if (
         this.player &&
-        this.player.readyToScoreEvaluation == false &&
-        player.readyToScoreEvaluation == true
+        this.player.passEval == false &&
+        this.player.readyToScoreEvaluation == true &&
+        this.sentEvalScoreRequest == false
       ) {
+        this.sentEvalScoreRequest = true;
         // This participant is now ready to be scored, send a message to the NLP server
         let req = {
           command: 'scoreEvaluation',
@@ -285,7 +291,13 @@ export default {
         }
       }
 
-      this.player = player;
+      
+      // Connect to the NLP server
+      if (!this.connectedToNLP) {
+        this.connectToNLP();
+      } else {
+        this.connectedToNLP = true;
+      }
 
       if (this.playerState != player.gameStep) {
         // Handle experiment step change
@@ -403,13 +415,6 @@ export default {
       tag.setAttribute('defer', 'defer');
       document.head.appendChild(tag);
     });
-
-    // Connect to the NLP server
-    if (!window.nlpServer) {
-      this.connectToNLP();
-    } else {
-      this.connectedToNLP = true;
-    }
   },
 };
 </script>

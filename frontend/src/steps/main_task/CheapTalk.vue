@@ -10,9 +10,9 @@
     <v-alert outlined type="error" v-if="player.profane">Do not send profane messages. Doing so will result in being
       blacklisted from AMT.</v-alert>
     <v-alert outlined type="warning" v-if="msgTimer <= player.timeout - player.timeoutWarning && msgTimer > 0">Inactivity
-      warning. You will be removed from the HIT if you do not send a
+      warning. You will be removed from the study if you do not send a
       message in {{ msgTimer }} seconds.</v-alert>
-    <v-alert outlined type="error" v-if="msgTimer == 0">Inactivity warning. You are about to be removed from this HIT due
+    <v-alert outlined type="error" v-if="msgTimer == 0">Inactivity warning. You are about to be removed from this study due
       to
       inactivity.</v-alert>
     <v-row dense class="col-sm-12 justify-center">
@@ -34,10 +34,10 @@
         <p>
           <!-- Inactivity warning (Unused) -->
           <v-alert outlined type="warning" v-if="msgTimer <= 25 && msgTimer > 0">Inactivity warning. You will be removed
-            from the HIT if you do not
+            from the study if you do not
             send a message in {{ msgTimer }} seconds.</v-alert>
           <v-alert outlined type="error" v-if="msgTimer == 0">Inactivity warning. You are about to be removed from this
-            HIT due
+            study due
             to inactivity.</v-alert>
         </p>
         <p class="card">
@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import ChatWindow from '../components/ChatWindow';
+import ChatWindow from '../../components/ChatWindow';
 import * as Filter from 'bad-words';
 
 // Profanity filter

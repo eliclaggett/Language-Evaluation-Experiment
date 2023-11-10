@@ -192,7 +192,7 @@ def ensureBestPartner(answers, diffs, playerKey, diff, exclude) {
       continue
     }
     if (diffs[playerKey][partner.key].contains(diff)) {
-      if (Param.samplingType == 'within' && (playerPassEval[playerKey] != playerPassEval[partner.key] || !(playerPassEval[playerKey] && playerPassEval[partner.key]))) {
+      if (Param.samplingType == 'within' && (playerPassEval[playerKey] != playerPassEval[partner.key])) {
         continue
       } else if (Param.samplingType == 'between' && playerPassEval[playerKey] == playerPassEval[partner.key]) {
         continue
@@ -395,6 +395,7 @@ calculateGroups = {
         success = makeInGroupPairs(0, entry.key)
       }
       if (!success) { success = makeInGroupPairs(1, entry.key) }
+      println('Player: ' + entry.key + ' Type: ' + pairType + ' Success: ' + success)
     } else {
       def success = makeInGroupPairs(0, entry.key)
       if (!success) { success = makeInGroupPairs(1, entry.key) }
@@ -406,6 +407,7 @@ calculateGroups = {
       if (!success) { success = makeOutGroupPairs(5, entry.key) }
       if (!success) { success = makeOutGroupPairs(4, entry.key) }
       if (!success) { success = makeOutGroupPairs(3, entry.key) }
+      println('Player: ' + entry.key + ' Type: ' + pairType + ' Success: ' + success)
     }
   }
 
@@ -451,6 +453,7 @@ calculateGroups = {
           ])
 
         if (!edges.contains(player) && !edges.contains(partner)) {
+          println('Creating social tie for ' + player.chatId + ' and ' + partner.chatId)
           g.addEdge(player, partner)
           edges.add(player)
           edges.add(partner)

@@ -13,12 +13,16 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification, Text
 import ssl
 import pathlib
 import asyncio
+import websockets
 from websockets.server import serve
 
 from google.cloud import dialogflow
 load_dotenv(find_dotenv())
 
 fspath = os.getenv('EXPERIMENT_DIR')
+if (os.getenv('DEPLOYMENT') == 'prod'):
+    fspath = os.getenv('PROD_EXPERIMENT_DIR')
+
 DIALOGFLOW_PROJECT_ID = os.getenv('DIALOGFLOW_PROJECT_ID')
 SERVER_DOMAIN = os.getenv('SERVER_DOMAIN')
 
@@ -513,6 +517,8 @@ async def handleInput(websocket):
                 await pSocks[data.id].send(json.dumps({'score': score}))
             if (not sent):
                 await websocket.send(json.dumps(output))
+    except websockets.exceptions.ConnectionClosedError:
+        print('Connection forcibly closed')
     finally:
         connected.remove(websocket)
 

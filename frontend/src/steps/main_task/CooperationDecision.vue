@@ -34,12 +34,13 @@
               </p>
             </div>
           </v-row>
+    
+          <v-btn class="center mt-4" @click="selectBonusOption">Confirm</v-btn>
+    
         </v-radio-group>
       </v-layout>
     </div>
-    <v-layout justify-center>
-      <v-btn class="center mt-4" @click="selectBonusOption">Confirm</v-btn>
-    </v-layout>
+    
   </v-col>
 </template>
 

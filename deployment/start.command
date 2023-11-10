@@ -9,8 +9,8 @@ fi
 
 ssh -i ./server.pem -tt $SERVER_SSH << HERE
  bash
- cd $EXPERIMENT_DIR
- nohup ./run.sh &
+ cd $PROD_EXPERIMENT_DIR
+ nohup ./start.sh &
  sleep 1
  tail -f nohup.out
 HERE

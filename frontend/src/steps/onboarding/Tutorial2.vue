@@ -72,7 +72,7 @@
               Note: Refrain from using offensive language. If your partner is
               abusive or unresponive, you can end the task by clicking the
               "Report Partner" button below the chat window:
-              <v-img :src="require(`../assets/report_btn.png`)" max-width="150" class="ma-4"></v-img>
+              <v-img :src="require(`@/assets/report_btn.png`)" max-width="150" class="ma-4"></v-img>
             </p>
           </div>
 
@@ -114,9 +114,9 @@
             </h1>
           </v-row>
           <v-row justify="center">
-            <v-img :src="require(`../assets/vs0.png`)" v-if="player.neighborNodes[0].groupId != player.groupId"
+            <v-img :src="require(`@/assets/vs0.png`)" v-if="player.neighborNodes[0].groupId != player.groupId"
               id="groupTypeIcon"></v-img>
-            <v-img :src="require(`../assets/shake0.png`)" v-if="player.neighborNodes[0].groupId == player.groupId"
+            <v-img :src="require(`@/assets/shake0.png`)" v-if="player.neighborNodes[0].groupId == player.groupId"
               id="groupTypeIcon" class="sameGroup"></v-img>
           </v-row>
           <v-row justify="center" class="col-sm-8 center">
@@ -141,7 +141,7 @@ import {
   CategoryScale,
   ArcElement,
 } from 'chart.js';
-import SuggestionComponent from '../components/Suggestion';
+import SuggestionComponent from '../../components/Suggestion';
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale);
 
@@ -392,7 +392,7 @@ a {
 }
 
 .group0 .center-circle {
-  background: url('../assets/group0.png'), rgb(80, 27, 140);
+  /* background: url('../assets/group0.png'), rgb(80, 27, 140); */
   background-size: 3em;
   background-repeat: no-repeat;
   background-position: top;
@@ -403,7 +403,7 @@ a {
 }
 
 .group1 .center-circle {
-  background: url('../assets/group1.png'), rgb(216, 119, 1);
+  /* background: url('../assets/group1.png'), rgb(216, 119, 1); */
   background-size: 3em;
   background-repeat: no-repeat;
   background-position: top;

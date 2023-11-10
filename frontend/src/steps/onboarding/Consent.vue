@@ -30,7 +30,7 @@
         Tutorial: before the task, you will complete a tutorial on how to do the
         task. After the tutorial, you will be asked a few questions about your
         understanding of the game. If you do not answer the questions correctly,
-        you will still receive the base pay of {{ basePay | money }}, but you
+        you will still receive the base pay of {{ task1Pay | money }}, but you
         are not eligible to join the task and the HIT again.
       </p>
       <p>
@@ -70,13 +70,13 @@
       </p>
       <strong>Compensation & Costs</strong>
       <p>
-        You will be compensated the base pay of {{ basePay | money }} for
+        You will be compensated the base pay of {{ task1Pay | money }} for
         beginning the study and completing the initial tutorial section. If you
         are deemed eligible to participate in the actual game (by answering the
         tutorial questions correctly), and you complete the game, you will also
-        receive a completion bonus of {{ completionBonus | money }}. In
+        receive a completion bonus of {{ task2Pay | money }}. In
         addition, those who participate in the game may earn a bonus up to
-        {{ performanceBonus | money }} in a performance bonus based on the
+        {{ maxBonus | money }} in a performance bonus based on the
         decisions they make while playing the game.
       </p>
       <p>There will be no cost to you if you participate in this study.</p>
@@ -237,21 +237,14 @@ export default {
   },
 
   computed: {
-    basePay() {
-      return this.player.platform == 'prolific'
-        ? this.player.prolificTask1Pay
-        : this.player.basePay;
+    task1Pay() {
+      return this.player.prolificTask1Pay;
     },
-    completionBonus() {
-      return this.player.platform == 'prolific'
-        ? this.player.completionBonus + this.player.prolificTask2Pay
-        : this.player.completionBonus;
+    task2Pay() {
+      return this.player.prolificTask2Pay;
     },
-    performanceBonus() {
-      return (
-        this.player.completionBonus * this.player.multiplier -
-        this.player.completionBonus
-      );
+    maxBonus() {
+      return this.player.prolificCooperateBonus;
     },
   },
   filters: {

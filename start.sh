@@ -3,6 +3,8 @@ set -a
 source .env
 set +a
 
+echo $DEPLOYMENT;
+
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$pth"
 eval "$(pyenv init -)"

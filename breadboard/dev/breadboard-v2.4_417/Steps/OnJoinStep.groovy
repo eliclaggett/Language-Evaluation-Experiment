@@ -61,7 +61,7 @@ public class ExampleClient extends WebSocketClient {
 def startPreEval(player) {
   player.gameStep = 'preEval'
   msgs = [
-    "Welcome to this HIT! This task simply involves exchanging opinions about a specific topic with a partner.",
+    "Welcome to our study! This task simply involves exchanging opinions about a specific topic with a partner.",
     "Let's start with a practice session.",
     "First, please discuss how you feel about the recent news about how AI is impacting jobs, education, and society with your partner."
   ]
@@ -79,6 +79,7 @@ onJoinStep.run = { playerId ->
   println('onJoinStep.run:' + Param.numPlayers)
   
   // Initialize player attributes
+  player.gameStep = 'recaptcha'
   player.interventionMode = Param.interventionMode
   player.samplingMode = Param.samplingMode
   player.rejectedSuggestions = []
@@ -90,8 +91,8 @@ onJoinStep.run = { playerId ->
   player.mutualCompletionBonus = Param.mutualCompletionBonus
   player.prolificTask1Pay = Param.prolificTask1Pay
   player.prolificTask2Pay = Param.prolificTask2Pay
-  player.prolificMaxPay = Param.prolificTask1Pay + Param.prolificTask2Pay + Param.completionBonus * Param.multiplier
-  player.multiplier = Param.multiplier
+  player.prolificDefectBonus = Param.prolificDefectBonus
+  player.prolificCooperateBonus = Param.prolificCooperateBonus
   player.timeoutWarning = Param.timeoutWarning
   player.timeout = Param.timeout
   player.groupingComplete = false
@@ -138,7 +139,8 @@ onJoinStep.run = { playerId ->
   player.forceSubmitSurvey = false
   player.platform = Param.platform
   player.prolificId = ''
-  player.completionCode = Param.completionCode
+  player.prolificCompletionCodes = Param.prolificCompletionCodes
+  player.whichCompletionCode = 'task2_partnerDefect'
   player.waitingTime = Param.waitingTime
   player.evaluationStep = ''
   player.readyToScoreEvaluation = false
@@ -147,6 +149,7 @@ onJoinStep.run = { playerId ->
   player.lastEvalMessageReceived = -1
   player.bonusOption = -1
   player.partnerBonusOption = -1
+  player.tutorialCorrectAnswers = [1,2,2,3]
 
   // Record player id
   a.addEvent('setPlayerId', [
@@ -319,7 +322,7 @@ onJoinStep.run = { playerId ->
     }
 
     if (!v.finished) {
-      if (Param.samplingMode == 'all' || Param.platform == 'prolific') {
+      if (Param.samplingMode == 'all') {
         judgeHuman(v.chatId, 1)
       } else {
         startPreEval(v)
@@ -407,9 +410,11 @@ onJoinStep.run = { playerId ->
 
       def bonus = 0
       if (v.bonusOption as int == 1) {
+        v.whichCompletionCode = 'task2_defect'
         bonus = Param.completionBonus
       } else if (v.bonusOption as int == 2 && allPartnersAgree) {
         // Both partners must select option two to receive the extra bonus
+        v.whichCompletionCode = 'task2_cooperate'
         bonus = Param.mutualCompletionBonus
       }
 
@@ -426,6 +431,7 @@ onJoinStep.run = { playerId ->
           neighborBonus = Param.completionBonus
         } else if (n.bonusOption as int == 2 && allPartnersAgree) {
           neighborBonus = Param.mutualCompletionBonus
+          n.whichCompletionCode = 'task2_cooperate'
         }
 
         neighborBonus = Math.ceil(neighborBonus * 100) / 100
@@ -683,7 +689,8 @@ onJoinStep.run = { playerId ->
 
 
   // Start the experiment with the pre-evaluation
-  startPreEval(player)
+  // startPreEval(player)
+  player.gameStep = 'recaptcha'
   Param.numPlayers++
   Param.chatIdCounter++
 }

@@ -17,30 +17,55 @@ import java.util.HashMap;
 import java.util.Map;
 
 Param = [
-  platform: 'mturk', // "mturk" or "prolific"
-  completionCode: 'C1CUDUAH',
-  mode: 'dev', // "dev" or "prod"
+  // -------------------------------------------------------
+  // Change according to trial type-------------------------
+  // -------------------------------------------------------
+  platform: 'prolific', // "mturk" or "prolific"
+  prolificCompletionCodes: [
+    task1: 'C1CUDUAH',
+    task2_partnerDefect: 'C1JF7BDA',
+    task2_defect: 'CGW2M93O',
+    task2_cooperate: 'C34UQA9H'
+  ],
+  
   samplingMode: 'slor', // "mcq", "chatbot", "chatbot2", "slor", "all"
-  samplingType: 'within', // "within", "between", "random"
-  prioritizeType: 'ingroup',// "ingroup" or "outgroup"
+  samplingType: 'random', // "within", "between", "random" (Allow all pairs)
+
   interventionMode: 'none', // "reply", "none", or "bot"
+  
+  // -------------------------------------------------------
+  // Do not change------------------------------------------
+  // -------------------------------------------------------
+  
+  mode: 'prod', // "dev" or "prod"
   
   // Experiment timing in minutes
   waitingTime: 12, // must be >= join time and tutorial time in Breadboard (4 min join time + 8 min pre-eval time)
-  chatTime: 3,  // time allotted to chat step
-  topicDelay: 1, // time after chat starts that the topic is introduced
-  followupDelay: 1, // time after topic is introduced that the followup prompt is sent
-  cooperationDiscussionTime: 2, // time after the chat that is alotted to discuss cooperation decision
+  chatTime: 10,  // time allotted to chat step
+  topicDelay: 3, // time after chat starts that the topic is introduced
+  followupDelay: 3, // time after topic is introduced that the followup prompt is sent
+  cooperationDiscussionTime: 3, // time after the chat that is alotted to discuss cooperation decision
   surveyTime: 5, // time allotted to follow-up survey
   cooperationTime: 3, // time alloteted to cooperation decision
   
+
+  
   // Experiment payment in dollars
+  // mTurk
+  // mTurk has a base pay + completion bonus paradigm
   basePay: 3,
-  prolificTask1Pay: 2,
-  prolificTask2Pay: 2,
   completionBonus: 2,
   mutualCompletionBonus: 4,
-  multiplier: 1.5,
+
+  // Prolific
+  // Prolific does not have a base pay + completion bonus paradigm
+  // There is a set payment for each task
+  // So, we split the experiment into two "tasks" with possible extra bonus
+  prolificTask1Pay: 3,
+  prolificTask2Pay: 4,
+  prolificDefectBonus: 2,
+  prolificCooperateBonus: 4,
+  
 
   sandbox: true, // AMT sandbox mode
   timeoutWarning: 40, // time in seconds to show an inactivity warning

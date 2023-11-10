@@ -25,7 +25,7 @@
 
 <script>
 /* global Breadboard */
-import LikertQuestion from '../components/LikertQuestion.vue';
+import LikertQuestion from '../../components/LikertQuestion.vue';
 
 export default {
   name: 'GroupingStep',
@@ -171,7 +171,7 @@ export default {
 }
 
 .group0 .center-circle {
-  background: url('../assets/group0.png');
+  /* background: url('../assets/group0.png'); */
   background-size: cover;
   background-position: center;
 }
@@ -181,7 +181,7 @@ export default {
 }
 
 .group1 .center-circle {
-  background: url('../assets/group1.png');
+  /* background: url('../assets/group1.png'); */
   background-size: cover;
   background-position: center;
 }
