@@ -47,10 +47,8 @@ There is no single executable for this web application, so please follow install
 ## Authors
 
 <p align="center">
-  <span>
-    <img src="/img1.png" width="100" />
-    <strong>Eli Claggett</strong>
-  </span>
+  <img src="https://raw.githubusercontent.com/eliclaggett/Language-Evaluation-Experiment/refs/heads/main/assets/eli.png" width="80" valign="middle"/>
+  <strong>Eli Claggett</strong>
 </p>
 
 ## License
