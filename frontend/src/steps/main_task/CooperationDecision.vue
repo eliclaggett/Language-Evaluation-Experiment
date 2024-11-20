@@ -1,7 +1,14 @@
-<!-- Main Task: Cooperation Decision -->
+<!--
+Filename: CooperationDecision.vue
+Author: Elijah Claggett
+Description: Participants choose whether to cooperate with or defect from their partner in a behavioral economics game
+-->
 <template>
   <v-col class="push-10 center" xl="6" lg="8" md="8">
-    <div v-if="!player.doneFakeLoading" class="text-center center overflow-hidden">
+    <div
+      v-if="!player.doneFakeLoading"
+      class="text-center center overflow-hidden"
+    >
       <!-- Fake loading message to "verify the participant's responses" -->
       <h2 class="text-center">Verification in progress...</h2>
       <v-progress-linear indeterminate class="ma-10 center text-center" />
@@ -13,7 +20,11 @@
       <!-- Done fake loading, show the bonus options -->
       <h1 class="text-center mb-4">You're eligible for a bonus!</h1>
       <p class="text-center">Please select an option below.</p>
-      <v-layout style="margin-top: 1.5em; align-items: stretch" justify-center class="col-sm-8 center">
+      <v-layout
+        style="margin-top: 1.5em; align-items: stretch"
+        justify-center
+        class="col-sm-8 center"
+      >
         <v-radio-group v-model="bonusOption">
           <v-row class="radiorow">
             <v-radio key="q1-default" value="1" class="center" />
@@ -29,18 +40,18 @@
               <p>
                 Award you and your partner a
                 {{ player.mutualCompletionBonus | money }} bonus.
-                <span class="smalltext">* If you select this but your partner does not, you will
-                  receive no bonus.</span>
+                <span class="smalltext"
+                  >* If you select this but your partner does not, you will
+                  receive no bonus.</span
+                >
               </p>
             </div>
           </v-row>
-    
+
           <v-btn class="center mt-4" @click="selectBonusOption">Confirm</v-btn>
-    
         </v-radio-group>
       </v-layout>
     </div>
-    
   </v-col>
 </template>
 
@@ -93,7 +104,8 @@ export default {
       if (this.player.cooperationStartTime) {
         var curTime = Date.now() + this.player.utcOffset;
         var endTime =
-          (this.player.cooperationStartTime + this.player.cooperationTime * 60) *
+          (this.player.cooperationStartTime +
+            this.player.cooperationTime * 60) *
           1000;
 
         var diff = (endTime - curTime) / 1000;
@@ -108,7 +120,9 @@ export default {
     selectBonusOption() {
       document.body.scrollTop = 0; // For Safari
       document.documentElement.scrollTop = 0;
-      Breadboard.send('completeCooperationDecision', { option: this.bonusOption });
+      Breadboard.send('completeCooperationDecision', {
+        option: this.bonusOption,
+      });
     },
   },
 };

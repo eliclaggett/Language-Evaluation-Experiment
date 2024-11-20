@@ -1,9 +1,9 @@
 ## Prolific
 
-https://slabbrdbrd.dev/game/493/5002?PROLIFIC_PID={{%PROLIFIC_PID%}}&STUDY_ID={{%STUDY_ID%}}&SESSION_ID={{%SESSION_ID%}}
+**URL Format**
+`https://slabbrdbrd.dev/game/493/5002?PROLIFIC_PID={{%PROLIFIC_PID%}}&STUDY_ID={{%STUDY_ID%}}&SESSION_ID={{%SESSION_ID%}}`
 
-
-
+**Setup**
 Step 1) Create a new study in Prolific. 
 
 - Record prolific IDs using URL parameters

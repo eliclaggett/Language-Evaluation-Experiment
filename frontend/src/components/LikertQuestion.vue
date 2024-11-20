@@ -1,4 +1,8 @@
-<!-- Likert Question UI Element -->
+<!--
+Filename: LikertQuestion.vue
+Author: Elijah Claggett
+Description: Likert-scale survey question UI Element
+-->
 <template>
   <v-container class="likert">
     <v-row align="center">
@@ -7,25 +11,60 @@
     <v-row align="center" :class="thisClass">
       <v-col cols="1"></v-col>
       <v-col cols="2">
-        <PairItem itemValue="Strongly disagree" itemType="text" itemIdx="1" @chooseItem="chooseItem(0)" />
+        <PairItem
+          itemValue="Strongly disagree"
+          itemType="text"
+          itemIdx="1"
+          @chooseItem="chooseItem(0)"
+        />
       </v-col>
       <v-col cols="2">
-        <PairItem itemValue="Disagree" itemType="text" itemIdx="1" @chooseItem="chooseItem(1)" />
+        <PairItem
+          itemValue="Disagree"
+          itemType="text"
+          itemIdx="1"
+          @chooseItem="chooseItem(1)"
+        />
       </v-col>
       <v-col cols="2">
-        <PairItem itemValue="Somewhat disagree" itemType="text" itemIdx="1" @chooseItem="chooseItem(2)" />
+        <PairItem
+          itemValue="Somewhat disagree"
+          itemType="text"
+          itemIdx="1"
+          @chooseItem="chooseItem(2)"
+        />
       </v-col>
       <v-col cols="2">
-        <PairItem itemValue="Neutral" itemType="text" itemIdx="1" @chooseItem="chooseItem(3)" />
+        <PairItem
+          itemValue="Neutral"
+          itemType="text"
+          itemIdx="1"
+          @chooseItem="chooseItem(3)"
+        />
       </v-col>
       <v-col cols="2">
-        <PairItem itemValue="Somewhat agree" itemType="text" itemIdx="1" @chooseItem="chooseItem(4)" />
+        <PairItem
+          itemValue="Somewhat agree"
+          itemType="text"
+          itemIdx="1"
+          @chooseItem="chooseItem(4)"
+        />
       </v-col>
       <v-col cols="2">
-        <PairItem itemValue="Agree" itemType="text" itemIdx="1" @chooseItem="chooseItem(5)" />
+        <PairItem
+          itemValue="Agree"
+          itemType="text"
+          itemIdx="1"
+          @chooseItem="chooseItem(5)"
+        />
       </v-col>
       <v-col cols="2">
-        <PairItem itemValue="Strongly agree" itemType="text" itemIdx="1" @chooseItem="chooseItem(6)" />
+        <PairItem
+          itemValue="Strongly agree"
+          itemType="text"
+          itemIdx="1"
+          @chooseItem="chooseItem(6)"
+        />
       </v-col>
       <v-col cols="1"></v-col>
     </v-row>

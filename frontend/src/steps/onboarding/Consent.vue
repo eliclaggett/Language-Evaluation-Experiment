@@ -1,4 +1,8 @@
-<!-- Experiment consent form -->
+<!--
+Filename: Consent.vue
+Author: Elijah Claggett
+Description: Consent form of the experiment
+-->
 <template>
   <v-col class="push-10 center" cols="10" md="6">
     <div class="text--primary">
@@ -6,8 +10,10 @@
       <h3 class="pt-4 pb-4">
         Please read the following information. When you give your consent, you
         can proceed to the task.
-        <span v-if="player.platform == 'prolific'">In this consent form, we refer to the current study as a Human
-          Intelligence Task (HIT).</span>
+        <span v-if="player.platform == 'prolific'"
+          >In this consent form, we refer to the current study as a Human
+          Intelligence Task (HIT).</span
+        >
       </h3>
       <p>
         This game is part of a research study conducted by Carnegie Mellon
@@ -74,10 +80,10 @@
         beginning the study and completing the initial tutorial section. If you
         are deemed eligible to participate in the actual game (by answering the
         tutorial questions correctly), and you complete the game, you will also
-        receive a completion bonus of {{ task2Pay | money }}. In
-        addition, those who participate in the game may earn a bonus up to
-        {{ maxBonus | money }} in a performance bonus based on the
-        decisions they make while playing the game.
+        receive a completion bonus of {{ task2Pay | money }}. In addition, those
+        who participate in the game may earn a bonus up to
+        {{ maxBonus | money }} in a performance bonus based on the decisions
+        they make while playing the game.
       </p>
       <p>There will be no cost to you if you participate in this study.</p>
       <strong>Confidentiality</strong>
@@ -124,13 +130,22 @@
         copy of this consent form for your records.
       </p>
 
-      <v-radio-group v-for="q in questions" v-bind:key="q.key" :label="q.label" v-model="q.model">
+      <v-radio-group
+        v-for="q in questions"
+        v-bind:key="q.key"
+        :label="q.label"
+        v-model="q.model"
+      >
         <template v-slot:label>
           <h3 class="mb-0">{{ q.label }}</h3>
         </template>
-        <v-radio v-bind:key="q.key + '-' + o.value" v-for="o in q.options" :label="o.label" :value="o.value"></v-radio>
+        <v-radio
+          v-bind:key="q.key + '-' + o.value"
+          v-for="o in q.options"
+          :label="o.label"
+          :value="o.value"
+        ></v-radio>
       </v-radio-group>
-      <!-- <v-btn :disabled="!formValid" @click="submitForm">Next</v-btn> -->
     </div>
     <div class="text-center">
       <v-btn @click="clickDone">Start Practice Session</v-btn>
@@ -257,8 +272,6 @@ export default {
     platform(val) {
       return val == 'mturk' ? 'Amazon Mechanical Turk' : 'Prolific';
     },
-  }
+  },
 };
 </script>
-
-<style></style>

@@ -1,11 +1,15 @@
-<!-- General tutorial for the experiment -->
+<!--
+Filename: Tutorial.vue
+Author: Elijah Claggett
+Description: General tutorial for the experiment
+-->
 <template>
   <v-col class="pt-4 center" cols="10" md="6">
     <h1 class="text-center">Tutorial</h1>
     <div v-if="step === 1" class="text--primary">
       <p class="pt-4">
-        As you read through this short tutorial, please answer the three comprehension
-        questions that look like this:
+        As you read through this short tutorial, please answer the three
+        comprehension questions that look like this:
       </p>
       <v-radio-group v-model="q1">
         <h3>
@@ -20,36 +24,46 @@
     </div>
     <div v-if="step === 2">
       <p class="pt-4">
-        This study has two parts. Within each part you will complete multiple short tasks.
-        You have a fixed amount of time to complete each part.
-        Please complete all tasks displayed at the top of the page within the alotted time.
+        This study has two parts. Within each part you will complete multiple
+        short tasks. You have a fixed amount of time to complete each part.
+        Please complete all tasks displayed at the top of the page within the
+        alotted time.
       </p>
       <h3>Part 1) Individual Preparation</h3>
       <p class="pt-4">
-        Before we assign you a partner, you will complete a
-        practice session with a chatbot and take a survey about your opinions on various topics.
-        Then, you will enter a waiting room until all study participants finish the survey.
-        The maximum time you will wait is displayed above.
+        Before we assign you a partner, you will complete a practice session
+        with a chatbot and take a survey about your opinions on various topics.
+        Then, you will enter a waiting room until all study participants finish
+        the survey. The maximum time you will wait is displayed above.
       </p>
       <p>
-        You will be paid {{ player.prolificTask1Pay | money }} for completing this part of the study.
+        You will be paid {{ player.prolificTask1Pay | money }} for completing
+        this part of the study.
       </p>
       <h3>Part 2) Paired Communication</h3>
       <p class="pt-4">
-        This is the main focus of our study.
-        You will be paired with another participant and will discuss your reactions to a recent news article that we will provide.
-        Then, you will write a paragraph-long report <b>about your partner's</b> opinion on the conversation topic.
+        This is the main focus of our study. You will be paired with another
+        participant and will discuss your reactions to a recent news article
+        that we will provide. Then, you will write a paragraph-long report
+        <b>about your partner's</b> opinion on the conversation topic.
       </p>
       <p>
-        You will be paid an additional {{ player.prolificTask2Pay | money }} for completing this part of the study.
+        You will be paid an additional {{ player.prolificTask2Pay | money }} for
+        completing this part of the study.
       </p>
       <p>
         If we recruit an odd number of participants, we may not be able to
-        partner you. If so, we will stop the study early and pay you for completing Part 1.
+        partner you. If so, we will stop the study early and pay you for
+        completing Part 1.
       </p>
       <v-radio-group v-model="q2">
         <h3>What does the main part of the study involve?</h3>
-        <v-radio v-for="a in q2Answers" :key="a.value + '-q2'" :label="a.label" :value="a.value" />
+        <v-radio
+          v-for="a in q2Answers"
+          :key="a.value + '-q2'"
+          :label="a.label"
+          :value="a.value"
+        />
       </v-radio-group>
       <br />
     </div>
@@ -60,15 +74,20 @@
       <h2 class="text-center">How we'll make pairs</h2>
       <p class="pt-4">
         Using the results of the survey you will take shortly, we will group
-        participants based on their beliefs. People in different groups will have different beliefs. People in the same
-        group will have similar beliefs. After creating groups, we'll form some pairs within
-        each group and some pairs between groups. After you are assigned a
-        partner, you will have {{ player.chatTime }} minutes to discuss your
-        thoughts.
+        participants based on their beliefs. People in different groups will
+        have different beliefs. People in the same group will have similar
+        beliefs. After creating groups, we'll form some pairs within each group
+        and some pairs between groups. After you are assigned a partner, you
+        will have {{ player.chatTime }} minutes to discuss your thoughts.
       </p>
       <v-radio-group v-model="q3">
         <h3>If my partner is from a different group, they likely have...</h3>
-        <v-radio v-for="a in q3Answers" :key="a.value + '-q3'" :label="a.label" :value="a.value" />
+        <v-radio
+          v-for="a in q3Answers"
+          :key="a.value + '-q3'"
+          :label="a.label"
+          :value="a.value"
+        />
       </v-radio-group>
       <p>
         The survey consists of seven statements which you will react to using
@@ -77,7 +96,11 @@
         You may click anywhere on the option you like best to select it:
       </p>
       <v-col class="center" cols="4">
-        <PairItem itemValue="Example button" itemType="text" @chooseItem="chooseItem(0)" />
+        <PairItem
+          itemValue="Example button"
+          itemType="text"
+          @chooseItem="chooseItem(0)"
+        />
       </v-col>
       <p class="mt-8 mb-6 text-center">
         After making a selection, you will automatically move to the next
@@ -90,10 +113,13 @@
       </v-col>
       <h2 class="text-center">Bonus Payment</h2>
       <p class="pt-4">
-        If you complete both Part 1 and Part 2 of this study, you are guaranteed to make at least {{ totalBasePay | money }}.
+        If you complete both Part 1 and Part 2 of this study, you are guaranteed
+        to make at least {{ totalBasePay | money }}.
       </p>
       <p>
-        In addition, you will have {{ player.cooperationDiscussionTime }} minutes to decide on which bonus option to choose:
+        In addition, you will have
+        {{ player.cooperationDiscussionTime }} minutes to decide on which bonus
+        option to choose:
       </p>
       <h3>Default Bonus</h3>
       <p>
@@ -102,25 +128,37 @@
       <h3>Extra Bonus</h3>
       <p>
         If you and your partner agree to select the extra bonus option, your
-        bonus will be {{ player.prolificCooperateBonus | money }}.
-        However, if you select this option and your partner does not, you will receive no bonus.
+        bonus will be {{ player.prolificCooperateBonus | money }}. However, if
+        you select this option and your partner does not, you will receive no
+        bonus.
       </p>
       <v-radio-group v-model="q4">
         <h3>
           What is the total pay of this study if you and your partner select the
           extra bonus?
         </h3>
-        <v-radio v-for="a in q4Answers" :key="a.value + '-q4'" :label="a.label" :value="a.value" />
+        <v-radio
+          v-for="a in q4Answers"
+          :key="a.value + '-q4'"
+          :label="a.label"
+          :value="a.value"
+        />
       </v-radio-group>
-      <v-alert type="success" outlined v-if="passCheck">Correct! Let's get started.</v-alert>
-      
+      <v-alert type="success" outlined v-if="passCheck"
+        >Correct! Let's get started.</v-alert
+      >
+
       <br />
     </div>
     <div class="text-center">
-      <v-alert type="error" outlined v-if="showHint">Oops! That's not right. Please review the explanation and try
-        again.</v-alert>
+      <v-alert type="error" outlined v-if="showHint"
+        >Oops! That's not right. Please review the explanation and try
+        again.</v-alert
+      >
       <v-btn @click="clickBack" :disabled="step < 2" class="mr-2">Back</v-btn>
-      <v-btn @click="clickNext" v-if="step < maxSteps" :disabled="nextDisabled">Next</v-btn>
+      <v-btn @click="clickNext" v-if="step < maxSteps" :disabled="nextDisabled"
+        >Next</v-btn
+      >
       <v-btn @click="clickDone" v-else :disabled="nextDisabled">Continue</v-btn>
     </div>
     <p class="warningtext" v-if="nextDisabled">
@@ -183,11 +221,15 @@ export default {
   methods: {
     answeredCorrectly() {
       this.showHint = false;
-      if (this.step == 1 && this.player.tutorialCorrectAnswers[0] != this.q1) this.showHint = true;
-      if (this.step == 2 && this.player.tutorialCorrectAnswers[1] != this.q2) this.showHint = true;
-      if (this.step == 3 && this.player.tutorialCorrectAnswers[2] != this.q3) this.showHint = true;
-      if (this.step == 4 && this.player.tutorialCorrectAnswers[3] != this.q4) this.showHint = true;
-      
+      if (this.step == 1 && this.player.tutorialCorrectAnswers[0] != this.q1)
+        this.showHint = true;
+      if (this.step == 2 && this.player.tutorialCorrectAnswers[1] != this.q2)
+        this.showHint = true;
+      if (this.step == 3 && this.player.tutorialCorrectAnswers[2] != this.q3)
+        this.showHint = true;
+      if (this.step == 4 && this.player.tutorialCorrectAnswers[3] != this.q4)
+        this.showHint = true;
+
       if (this.showHint) return false;
       return true;
     },
@@ -245,15 +287,23 @@ export default {
         style: 'currency',
         currency: 'USD',
       });
-      let cooperatePay = (this.player.prolificTask1Pay + this.player.prolificTask2Pay + this.player.prolificCooperateBonus).toLocaleString('en-US', {
+      let cooperatePay = (
+        this.player.prolificTask1Pay +
+        this.player.prolificTask2Pay +
+        this.player.prolificCooperateBonus
+      ).toLocaleString('en-US', {
         style: 'currency',
         currency: 'USD',
       });
-      let defectPay =(this.player.prolificTask1Pay + this.player.prolificTask2Pay + this.player.prolificDefectBonus).toLocaleString('en-US', {
+      let defectPay = (
+        this.player.prolificTask1Pay +
+        this.player.prolificTask2Pay +
+        this.player.prolificDefectBonus
+      ).toLocaleString('en-US', {
         style: 'currency',
         currency: 'USD',
       });
-      
+
       let answers = [
         { label: task1Pay, value: 1 },
         { label: task2Pay, value: 2 },

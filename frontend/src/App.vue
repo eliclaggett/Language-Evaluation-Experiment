@@ -1,21 +1,38 @@
-<!-- Main app -->
+<!--
+Filename: App.vue
+Author: Elijah Claggett
+Description: Wrapper for the VueJS frontend of the Breadboard experiment
+-->
 <template>
   <v-app id="app">
     <!-- Top bar -->
-    <v-app-bar dense app :class="player.neighborNodes && player.neighborNodes.length > 0
-      ? 'no-shadow'
-      : ''
-      ">
+    <v-app-bar
+      dense
+      app
+      :class="
+        player.neighborNodes && player.neighborNodes.length > 0
+          ? 'no-shadow'
+          : ''
+      "
+    >
       <v-spacer />
       <v-app-bar-title>Communication Task</v-app-bar-title>
       <v-spacer />
     </v-app-bar>
-    <div id="partnerList" v-if="player.displayNeighborNodes &&
-      player.neighborNodes &&
-      player.neighborNodes.length > 0
-      ">
-      <span v-if="player.neighborNodes[0].groupId != player.groupId">Your partner is from a different group</span>
-      <span v-if="player.neighborNodes[0].groupId == player.groupId">Your partner is from the same group</span>
+    <div
+      id="partnerList"
+      v-if="
+        player.displayNeighborNodes &&
+        player.neighborNodes &&
+        player.neighborNodes.length > 0
+      "
+    >
+      <span v-if="player.neighborNodes[0].groupId != player.groupId"
+        >Your partner is from a different group</span
+      >
+      <span v-if="player.neighborNodes[0].groupId == player.groupId"
+        >Your partner is from the same group</span
+      >
     </div>
     <v-main v-if="!browserCompatible">
       <h2 class="pa-10 text-center">
@@ -76,27 +93,66 @@
       </v-col>
 
       <!-- Experiment steps -->
-      <RecaptchaStep v-if="player.gameStep === 'recaptcha' && loading === false" :player="player" />
-      <ConsentStep v-if="player.gameStep === 'consent' && loading === false" :player="player" />
-      <PreEvalStep v-if="player.gameStep === 'preEval' && loading === false" :player="player" :nlp="nlp" />
-      <TutorialStep v-if="player.gameStep === 'tutorial' && loading === false" :player="player" />
-      <GroupingStep v-if="player.gameStep === 'grouping' && loading === false" :player="player" />
-      <Tutorial2Step v-if="player.gameStep === 'tutorial2' && loading === false" :player="player" />
-      <CheapTalkStep v-if="player.gameStep === 'mainChat' && loading === false" :player="player" :nlp="nlp" />
-      <CooperationStep v-if="player.gameStep === 'game' && loading === false" :player="player" />
-      <SurveyStep v-if="player.gameStep === 'survey' && loading === false" :player="player" />
-      <PartnerAnswerStep v-if="player.gameStep === 'gradePartnerAnswer' && loading === false" :player="player" />
-      <EndStep v-if="player.gameStep === 'end' && loading === false" :player="player" />
-      <ReturnStep v-else-if="player.gameStep === 'failedCaptcha' ||
-        player.gameStep === 'failedConsent' ||
-        player.gameStep === 'leftover' ||
-        player.gameStep === 'reported' ||
-        player.gameStep == 'notReady' ||
-        player.gameStep == 'tooLate' ||
-        player.gameStep == 'failedEvaluation' ||
-        player.gameStep == 'timeout' ||
-        player.gameStep == 'failCheckUnderstanding'
-        " :player="player" />
+      <RecaptchaStep
+        v-if="player.gameStep === 'recaptcha' && loading === false"
+        :player="player"
+      />
+      <ConsentStep
+        v-if="player.gameStep === 'consent' && loading === false"
+        :player="player"
+      />
+      <PreEvalStep
+        v-if="player.gameStep === 'preEval' && loading === false"
+        :player="player"
+        :nlp="nlp"
+      />
+      <TutorialStep
+        v-if="player.gameStep === 'tutorial' && loading === false"
+        :player="player"
+      />
+      <GroupingStep
+        v-if="player.gameStep === 'grouping' && loading === false"
+        :player="player"
+      />
+      <Tutorial2Step
+        v-if="player.gameStep === 'tutorial2' && loading === false"
+        :player="player"
+      />
+      <CheapTalkStep
+        v-if="player.gameStep === 'mainChat' && loading === false"
+        :player="player"
+        :nlp="nlp"
+      />
+      <CooperationStep
+        v-if="player.gameStep === 'game' && loading === false"
+        :player="player"
+      />
+      <SurveyStep
+        v-if="player.gameStep === 'survey' && loading === false"
+        :player="player"
+      />
+      <PartnerAnswerStep
+        v-if="player.gameStep === 'gradePartnerAnswer' && loading === false"
+        :player="player"
+      />
+      <EndStep
+        v-if="player.gameStep === 'end' && loading === false"
+        :player="player"
+      />
+      <ReturnStep
+        v-else-if="
+          player.gameStep === 'failedCaptcha' ||
+          player.gameStep === 'failedConsent' ||
+          player.gameStep === 'leftover' ||
+          player.gameStep === 'reported' ||
+          player.gameStep == 'notReady' ||
+          player.gameStep == 'tooLate' ||
+          player.gameStep == 'failedEvaluation' ||
+          player.gameStep == 'timeout' ||
+          player.gameStep == 'failCheckUnderstanding'
+        "
+        :player="player"
+      />
     </v-main>
   </v-app>
 </template>
@@ -182,7 +238,7 @@ export default {
         nlpServerURL =
           'wss://' + window.location.hostname + ':' + this.player.nlpPort;
       }
-      console.log('NLP server URL: ' + nlpServerURL)
+      console.log('NLP server URL: ' + nlpServerURL);
 
       window.nlpServer = new WebSocket(nlpServerURL);
 
@@ -291,7 +347,6 @@ export default {
         }
       }
 
-      
       // Connect to the NLP server
       if (!this.connectedToNLP) {
         this.connectToNLP();
@@ -404,7 +459,7 @@ export default {
   },
   mounted() {
     // Load variables from json file (shared with Breadboard and NLP server)
-    const texts = require("@/assets/texts.json");
+    const texts = require('@/assets/texts.json');
     window.texts = texts;
 
     // Load external scripts
@@ -471,18 +526,6 @@ export default {
   font-family: 'Poppins', Helvetica, sans-serif;
   background: var(--bg-color);
   color: var(--text-color);
-}
-
-h1,
-h2,
-h3,
-h4,
-p,
-span,
-a,
-canvas,
-div {
-  user-select: none;
 }
 
 .center {
@@ -675,10 +718,10 @@ button[type='submit'] {
   transition-duration: 0.28s;
   transition-property: box-shadow, transform, opacity;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  -webkit-user-select: none;
+  /*-webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  user-select: none;
+  user-select: none;*/
   vertical-align: middle;
   white-space: nowrap;
 }

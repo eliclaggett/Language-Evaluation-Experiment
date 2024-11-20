@@ -1,4 +1,26 @@
 #!/bin/bash
+
+################################################################################
+# Filename: start.sh
+# Author: Elijah Claggett
+# Description: Starts a Breadboard experiment alongside a Python websocket server
+#
+# Usage:
+#   ./start.sh
+#
+# Dependencies:
+#   - Breadboard
+#   - Python 3
+#   - Pyenv
+#   - Pyenv Virtualenv
+#
+# Notes:
+#   Please create a .env file in the same directory as this script with the following variables defined accordingly:
+#       - DEPLOYMENT (dev or prod)
+#       - VENV (pyenv virtualenv name)
+#
+################################################################################
+
 set -a            
 source .env
 set +a

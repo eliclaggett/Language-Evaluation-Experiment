@@ -1,19 +1,29 @@
-<!-- Short follow-up tutorial and waiting screen for the main task -->
+<!--
+Filename: Tutorial2.vue
+Author: Elijah Claggett
+Description: Short follow-up tutorial and waiting screen for the main task
+-->
 <template>
   <div>
-    <v-container v-if="player.groupingComplete === true && player.isWaiting === true">
+    <v-container
+      v-if="player.groupingComplete === true && player.isWaiting === true"
+    >
       <v-row justify="center" class="pa-16">
         <v-col align="center" style="position: relative">
           <div v-if="step == 1 && !player.showReady">
-            <!-- Short tutorial of the main stage of the experiment -->
+            <!-- Tutorial of the main stage of the experiment -->
             <h1 v-if="!player.showReady" class="text-center">
               Almost there! Prepare for the next task
             </h1>
             <p class="pt-4 text-left">
-              <span v-if="!player.showReady">When the timer runs out, you will be assigned a partner and
-                enter a chatroom with them.</span>
-              <span v-if="player.showReady">You have been assigned a group and a partner. Click "I'm Ready"
-                to start the task.</span>
+              <span v-if="!player.showReady"
+                >When the timer runs out, you will be assigned a partner and
+                enter a chatroom with them.</span
+              >
+              <span v-if="player.showReady"
+                >You have been assigned a group and a partner. Click "I'm Ready"
+                to start the task.</span
+              >
             </p>
             <h3 class="text-left">
               Discussion About Assigned Topic ({{ player.chatTime }} min):
@@ -34,7 +44,12 @@
               Then, you will have {{ player.cooperationDiscussionTime }} minutes
               to decide on a bonus option with your partner. After that, you
               will write a report about the conversation.
-              <v-alert color="primary" icon="mdi-star" type="success" class="d-none">
+              <v-alert
+                color="primary"
+                icon="mdi-star"
+                type="success"
+                class="d-none"
+              >
                 Remember that sufficiently detailed reports about your partner
                 will be rewarded with a
                 <strong>{{ player.completionBonus | money }}</strong> bonus.
@@ -72,7 +87,11 @@
               Note: Refrain from using offensive language. If your partner is
               abusive or unresponive, you can end the task by clicking the
               "Report Partner" button below the chat window:
-              <v-img :src="require(`@/assets/report_btn.png`)" max-width="150" class="ma-4"></v-img>
+              <v-img
+                :src="require(`@/assets/report_btn.png`)"
+                max-width="150"
+                class="ma-4"
+              ></v-img>
             </p>
           </div>
 
@@ -83,14 +102,25 @@
             </h1>
             <h1 v-if="player.showReady">Task Start</h1>
             <div>
-              <span v-if="!player.showReady">Within 30 seconds of the timer expiring, please click the "I'm
+              <span v-if="!player.showReady"
+                >Within 30 seconds of the timer expiring, please click the "I'm
                 Ready" button that will appear. You may need to refresh the page
-                to see the button.</span>
+                to see the button.</span
+              >
               <p v-if="player.showReady">
                 Please click the ready button immediately to start the task. If
                 you do not see it, refresh the page:<br /><br />
-                <v-btn @click="readyForMainTask" id="readyBtn" block x-large color="primary">I'm Ready</v-btn>
-                <v-alert type="success" id="readyMsg" class="d-none">Waiting for all participants to be ready...</v-alert>
+                <v-btn
+                  @click="readyForMainTask"
+                  id="readyBtn"
+                  block
+                  x-large
+                  color="primary"
+                  >I'm Ready</v-btn
+                >
+                <v-alert type="success" id="readyMsg" class="d-none"
+                  >Waiting for all participants to be ready...</v-alert
+                >
               </p>
             </div>
           </div>
@@ -98,10 +128,17 @@
       </v-row>
     </v-container>
     <v-expand-transition>
-      <v-container v-if="player.groupingComplete === true &&
-        player.isWaiting === false &&
-        showSplash
-        " id="groupAssignedMsg" align-start justify-start align-self="start">
+      <v-container
+        v-if="
+          player.groupingComplete === true &&
+          player.isWaiting === false &&
+          showSplash
+        "
+        id="groupAssignedMsg"
+        align-start
+        justify-start
+        align-self="start"
+      >
         <!-- Timer elapsed! Let's move to the chat now -->
         <div class="center">
           <p class="text-center">
@@ -114,17 +151,26 @@
             </h1>
           </v-row>
           <v-row justify="center">
-            <v-img :src="require(`@/assets/vs0.png`)" v-if="player.neighborNodes[0].groupId != player.groupId"
-              id="groupTypeIcon"></v-img>
-            <v-img :src="require(`@/assets/shake0.png`)" v-if="player.neighborNodes[0].groupId == player.groupId"
-              id="groupTypeIcon" class="sameGroup"></v-img>
+            <v-img
+              :src="require(`@/assets/vs0.png`)"
+              v-if="player.neighborNodes[0].groupId != player.groupId"
+              id="groupTypeIcon"
+            ></v-img>
+            <v-img
+              :src="require(`@/assets/shake0.png`)"
+              v-if="player.neighborNodes[0].groupId == player.groupId"
+              id="groupTypeIcon"
+              class="sameGroup"
+            ></v-img>
           </v-row>
           <v-row justify="center" class="col-sm-8 center">
             <p>
               Next, you will chat with your partner about an assigned topic.
             </p>
           </v-row>
-          <v-row justify="center" class="pb-4"><v-btn @click="goToChat">Continue to Chat</v-btn></v-row>
+          <v-row justify="center" class="pb-4"
+            ><v-btn @click="goToChat">Continue to Chat</v-btn></v-row
+          >
         </div>
       </v-container>
     </v-expand-transition>
@@ -201,7 +247,7 @@ export default {
       slideIdx: 0,
       showSplash: true,
       groupingComplete: false,
-      step: 1
+      step: 1,
     };
   },
   computed: {
@@ -258,7 +304,6 @@ export default {
 .card {
   border-radius: 4px;
   padding: 1em;
-  /* box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12); */
   border: solid 1px #eee;
   font-size: 0.92rem;
   color: #555;
@@ -321,7 +366,6 @@ export default {
 
 .ingroup .center-circle {
   border: solid 5px gold;
-  /* box-shadow: 0 0 5px 5px gold; */
   box-sizing: content-box;
 }
 
@@ -348,8 +392,6 @@ a {
 }
 
 #groupAssignedMsg {
-  /* z-index: 5; */
-  /* background: #f5f5f5; */
   position: absolute;
   top: 0;
   margin-top: 2rem;
@@ -383,7 +425,6 @@ a {
   justify-content: center;
   align-items: center;
   z-index: 2;
-  /* flex-wrap: wrap; */
   flex-direction: column;
 }
 
@@ -392,7 +433,6 @@ a {
 }
 
 .group0 .center-circle {
-  /* background: url('../assets/group0.png'), rgb(80, 27, 140); */
   background-size: 3em;
   background-repeat: no-repeat;
   background-position: top;
@@ -403,7 +443,6 @@ a {
 }
 
 .group1 .center-circle {
-  /* background: url('../assets/group1.png'), rgb(216, 119, 1); */
   background-size: 3em;
   background-repeat: no-repeat;
   background-position: top;

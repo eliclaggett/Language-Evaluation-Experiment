@@ -7,14 +7,14 @@
  * This Groovy script defines the global variables and experiment parameters used by the Breadboard backend.
  */
 
-import groovy.json.JsonOutput;
-import java.time.Instant;
-import groovy.json.JsonSlurper;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import groovy.json.JsonOutput
+import java.time.Instant
+import groovy.json.JsonSlurper
+import java.io.BufferedReader
+import java.io.FileReader
+import java.io.IOException
+import java.util.HashMap
+import java.util.Map
 
 Param = [
   // -------------------------------------------------------
@@ -27,18 +27,18 @@ Param = [
     task2_defect: 'CGW2M93O',
     task2_cooperate: 'C34UQA9H'
   ],
-  
+
   samplingMode: 'slor', // "mcq", "chatbot", "chatbot2", "slor", "all"
   samplingType: 'random', // "within", "between", "random" (Allow all pairs)
 
   interventionMode: 'none', // "reply", "none", or "bot"
-  
+
   // -------------------------------------------------------
   // Do not change------------------------------------------
   // -------------------------------------------------------
-  
+
   mode: 'prod', // "dev" or "prod"
-  
+
   // Experiment timing in minutes
   waitingTime: 12, // must be >= join time and tutorial time in Breadboard (4 min join time + 8 min pre-eval time)
   chatTime: 10,  // time allotted to chat step
@@ -47,9 +47,7 @@ Param = [
   cooperationDiscussionTime: 3, // time after the chat that is alotted to discuss cooperation decision
   surveyTime: 5, // time allotted to follow-up survey
   cooperationTime: 3, // time alloteted to cooperation decision
-  
 
-  
   // Experiment payment in dollars
   // mTurk
   // mTurk has a base pay + completion bonus paradigm
@@ -65,7 +63,6 @@ Param = [
   prolificTask2Pay: 4,
   prolificDefectBonus: 2,
   prolificCooperateBonus: 4,
-  
 
   sandbox: true, // AMT sandbox mode
   timeoutWarning: 40, // time in seconds to show an inactivity warning
@@ -132,56 +129,56 @@ Param = [
 ]
 
 public static Map<String, String> findClosestDotenv() {
-  Map<String, String> dotenvMap = new HashMap<>();
-  boolean foundEnv = false;
-  
+  Map<String, String> dotenvMap = new HashMap<>()
+  boolean foundEnv = false
+
   // Starting at current directory, traverse up until we find a dotenv file
-  String dir = System.getProperty('user.dir');
+  String dir = System.getProperty('user.dir')
   while (!foundEnv) {
-    File folder = new File(dir);
-    File[] listOfFiles = folder.listFiles();
+    File folder = new File(dir)
+    File[] listOfFiles = folder.listFiles()
     for (int i = 0; i < listOfFiles.length; i++) {
       if (listOfFiles[i].getName() == '.env') {
-        foundEnv = true;
-        break;
+        foundEnv = true
+        break
       }
     }
 
     if (!foundEnv) {
-      dir = dir.substring(0, dir.lastIndexOf('/'));
+      dir = dir.substring(0, dir.lastIndexOf('/'))
     }
   }
 
   // Read dotenv file
   try {
     BufferedReader reader = new BufferedReader(new FileReader(dir + '/.env'))
-    String line;
+    String line
 
     while ((line = reader.readLine()) != null) {
       // Skip comments and empty lines
       if (line.trim().isEmpty() || line.trim().startsWith('#')) {
-        continue;
+        continue
       }
 
       // Split into key and value
-      String[] parts = line.split('=', 2);
+      String[] parts = line.split('=', 2)
       if (parts.length == 2) {
-        String key = parts[0].trim();
-        String value = parts[1].trim();
+        String key = parts[0].trim()
+        String value = parts[1].trim()
 
         // Remove quotes
         if (value.startsWith('"') && value.endsWith('"')) {
-          value = value.substring(1, value.length() - 1);
+          value = value.substring(1, value.length() - 1)
         }
 
-        dotenvMap.put(key, value);
+        dotenvMap.put(key, value)
       }
     }
   } catch (IOException e) {
-      e.printStackTrace();
+    e.printStackTrace()
   }
 
-  return dotenvMap;
+  return dotenvMap
 }
 
 // Read environment variables from dotenv
@@ -190,11 +187,11 @@ Param.dotenvMap = dotenvMap
 Param.RECAPTCHA_SECRET = Param.dotenvMap.get('RECAPTCHA_SECRET')
 
 // Read global variables from JSON
-def jsonSlurper = new JsonSlurper();
+def jsonSlurper = new JsonSlurper()
 if (Param.mode == 'prod') {
-  def texts = jsonSlurper.parseText(new File('/home/ubuntu/eli/texts.json').text);
-  Param = Param + texts;
+  def texts = jsonSlurper.parseText(new File('/home/ubuntu/eli/texts.json').text)
+  Param = Param + texts
 } else {
-  def texts = jsonSlurper.parseText(new File('/Users/eclagget/Code/smart-reply-coordination/main/texts.json').text);
-  Param = Param + texts;
+  def texts = jsonSlurper.parseText(new File('/Users/eclagget/Code/smart-reply-coordination/main/texts.json').text)
+  Param = Param + texts
 }

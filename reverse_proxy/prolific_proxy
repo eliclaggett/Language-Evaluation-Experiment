@@ -1,0 +1,26 @@
+################################################################################
+# Filename: prolific_proxy
+# Author: Elijah Claggett
+# Description: NGINX Reverse Proxy for connecting to Breadboard with Prolific
+################################################################################
+
+server {
+	listen 443 ssl ;
+	listen [::]:443 ssl ;
+
+	server_name slabbrdbrd.dev; # managed by Certbot
+
+	location ~* /game/(\d+)/(\d+).*$ {
+		if ($arg_PROLIFIC_PID) {
+			return 301 https://slabbrdbrd.dev:9454/game/$1/$2/$arg_PROLIFIC_PID/connected$is_args$args;
+		}
+	}
+
+	location / {
+		proxy_buffering off;
+		proxy_pass https://localhost:9454/;
+	}
+
+    ssl_certificate /etc/letsencrypt/live/slabbrdbrd.dev/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/slabbrdbrd.dev/privkey.pem; # managed by Certbot
+}

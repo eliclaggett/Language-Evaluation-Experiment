@@ -1,3 +1,11 @@
+/*
+ * Filename: main.js
+ * Author: Elijah Claggett
+ *
+ * Description:
+ * This JavaScript file is the entrypoint of the VueJS frontend
+ */
+
 // Transpiler for older browsers
 import 'core-js/stable';
 // optional but required for transforming generator fns.

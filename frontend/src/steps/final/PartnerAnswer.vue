@@ -1,14 +1,30 @@
-<!-- Rate how level of agreement with conversation partner's report of my opinion -->
+<!--
+Filename: PartnerAnswer.vue
+Author: Elijah Claggett
+Description: Participants rate the conversation partner's report of their opinion
+-->
 <template>
   <v-row>
-    <v-col v-if="this.player.partnerReport == ''" class="push-10 center" xl="4" lg="6" md="6">
+    <v-col
+      v-if="this.player.partnerReport == ''"
+      class="push-10 center"
+      xl="4"
+      lg="6"
+      md="6"
+    >
       <h1 class="text-center mb-4">Waiting for your partner to finish...</h1>
       <p>
         We will ask you to review your partner's answers after they finish
         writing their report. You will wait a maximum of {{ remainingTime }}.
       </p>
     </v-col>
-    <v-col v-if="this.player.partnerReport != ''" class="push-10 center" xl="4" lg="6" md="6">
+    <v-col
+      v-if="this.player.partnerReport != ''"
+      class="push-10 center"
+      xl="4"
+      lg="6"
+      md="6"
+    >
       <h1 class="text-center mb-4">
         According to your partner,<br />your opinion is:
       </h1>

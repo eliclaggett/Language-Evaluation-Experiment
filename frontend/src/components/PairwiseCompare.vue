@@ -1,13 +1,27 @@
-<!-- Binary Choice UI Element -->
+<!--
+Filename: PairwiseCompare.vue
+Author: Elijah Claggett
+Description: Binary Choice Input UI Element
+-->
 <template>
   <v-container>
     <v-row align="center">
       <v-col cols="6">
-        <PairItem :itemValue="left" :itemType="itemType" itemIdx="1" @chooseItem="chooseItem(0)" />
+        <PairItem
+          :itemValue="left"
+          :itemType="itemType"
+          itemIdx="1"
+          @chooseItem="chooseItem(0)"
+        />
       </v-col>
 
       <v-col cols="6">
-        <PairItem :itemValue="right" :itemType="itemType" itemIdx="2" @chooseItem="chooseItem(1)" />
+        <PairItem
+          :itemValue="right"
+          :itemType="itemType"
+          itemIdx="2"
+          @chooseItem="chooseItem(1)"
+        />
       </v-col>
     </v-row>
   </v-container>

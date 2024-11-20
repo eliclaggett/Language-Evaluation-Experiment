@@ -1,4 +1,8 @@
-<!-- Main Task: Chat -->
+<!--
+Filename: CheapTalk.vue
+Author: Elijah Claggett
+Description: Main chat step of the experiment
+-->
 <template>
   <v-layout fill-height column justify-start align-center class="mt-4">
     <v-row class="flex-grow-0">
@@ -7,25 +11,47 @@
       </v-col>
     </v-row>
 
-    <v-alert outlined type="error" v-if="player.profane">Do not send profane messages. Doing so will result in being
-      blacklisted from AMT.</v-alert>
-    <v-alert outlined type="warning" v-if="msgTimer <= player.timeout - player.timeoutWarning && msgTimer > 0">Inactivity
-      warning. You will be removed from the study if you do not send a
-      message in {{ msgTimer }} seconds.</v-alert>
-    <v-alert outlined type="error" v-if="msgTimer == 0">Inactivity warning. You are about to be removed from this study due
-      to
-      inactivity.</v-alert>
+    <v-alert outlined type="error" v-if="player.profane"
+      >Do not send profane messages. Doing so will result in being blacklisted
+      from AMT.</v-alert
+    >
+    <v-alert
+      outlined
+      type="warning"
+      v-if="msgTimer <= player.timeout - player.timeoutWarning && msgTimer > 0"
+      >Inactivity warning. You will be removed from the study if you do not send
+      a message in {{ msgTimer }} seconds.</v-alert
+    >
+    <v-alert outlined type="error" v-if="msgTimer == 0"
+      >Inactivity warning. You are about to be removed from this study due to
+      inactivity.</v-alert
+    >
     <v-row dense class="col-sm-12 justify-center">
       <v-col lg="3" sm="6">
-        <ChatWindow :player="player" :nlp="nlp" @onMsgSend="handleMsgSend" @onType="handleType"
-          :participants="participants" msgSource="messagesChat" />
+        <ChatWindow
+          :player="player"
+          :nlp="nlp"
+          @onMsgSend="handleMsgSend"
+          @onType="handleType"
+          :participants="participants"
+          msgSource="messagesChat"
+        />
         <v-layout justify-center column align-center class="pa-6">
           <div class="text-center">
             <p class="text-center red--text d-none" id="reportConfirmText">
               Are you sure? This will end the task.
             </p>
-            <v-btn @click="clickCancel" outlined color="#555" class="d-none" id="cancelBtn">Cancel</v-btn>
-            <v-btn @click="clickReport" outlined color="error" id="reportBtn">Report Partner</v-btn>
+            <v-btn
+              @click="clickCancel"
+              outlined
+              color="#555"
+              class="d-none"
+              id="cancelBtn"
+              >Cancel</v-btn
+            >
+            <v-btn @click="clickReport" outlined color="error" id="reportBtn"
+              >Report Partner</v-btn
+            >
           </div>
         </v-layout>
       </v-col>
@@ -33,12 +59,14 @@
         <h2>Note:</h2>
         <p>
           <!-- Inactivity warning (Unused) -->
-          <v-alert outlined type="warning" v-if="msgTimer <= 25 && msgTimer > 0">Inactivity warning. You will be removed
-            from the study if you do not
-            send a message in {{ msgTimer }} seconds.</v-alert>
-          <v-alert outlined type="error" v-if="msgTimer == 0">Inactivity warning. You are about to be removed from this
-            study due
-            to inactivity.</v-alert>
+          <v-alert outlined type="warning" v-if="msgTimer <= 25 && msgTimer > 0"
+            >Inactivity warning. You will be removed from the study if you do
+            not send a message in {{ msgTimer }} seconds.</v-alert
+          >
+          <v-alert outlined type="error" v-if="msgTimer == 0"
+            >Inactivity warning. You are about to be removed from this study due
+            to inactivity.</v-alert
+          >
         </p>
         <p class="card">
           Talk continuously with your partner. It's okay if the conversation
@@ -80,7 +108,7 @@ export default {
     player: Object,
     nlp: Object,
   },
-  mounted() { },
+  mounted() {},
   methods: {
     clickReport() {
       // Clicking the report button prompts to confirm the action before ending the experiment

@@ -1,4 +1,15 @@
 #!/bin/bash
+
+################################################################################
+# Filename: deploy.command
+# Author: Elijah Claggett
+# Description: Deploys this Breadboard experiment along with its associated files
+#
+# Usage:
+#   ./deployment/deploy.command
+#
+################################################################################
+
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 cd "$parent_path"
 

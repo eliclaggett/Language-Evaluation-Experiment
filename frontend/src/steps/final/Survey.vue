@@ -1,4 +1,8 @@
-<!-- Reflection survey about the main task -->
+<!--
+Filename: Survey.vue
+Author: Elijah Claggett
+Description: Survey asking participants to reflect on their experience in the experiment
+-->
 <template>
   <v-container class="cols-sm-6 push-10" justify-center>
     <v-row class="survey">
@@ -21,38 +25,72 @@
               What was your partner's answer to this question?
               <small>(required)</small>
             </h3>
-            <v-textarea v-model="summary" label="" auto-grow outlined></v-textarea>
+            <v-textarea
+              v-model="summary"
+              label=""
+              auto-grow
+              outlined
+            ></v-textarea>
             <h3>
               What is your partner's opinion about the conversation topic as a
               whole? <small>(required)</small>
             </h3>
-            <v-textarea v-model="reasoning" label="" auto-grow outlined></v-textarea>
+            <v-textarea
+              v-model="reasoning"
+              label=""
+              auto-grow
+              outlined
+            ></v-textarea>
             <h3>
               How would you rate your feelings toward your partner?
               <small>(required)</small>
             </h3>
             <div class="slider-container">
-              <v-slider vertical v-model="rating" class="thermometer" step="1" min="0" max="6" length="500"></v-slider>
+              <v-slider
+                vertical
+                v-model="rating"
+                class="thermometer"
+                step="1"
+                min="0"
+                max="6"
+                length="500"
+              ></v-slider>
               <div class="slider-labels">
-                <span :class="bold6" @click="moveSlider(6)">Very warm - I wish I knew this person in real life</span>
+                <span :class="bold6" @click="moveSlider(6)"
+                  >Very warm - I wish I knew this person in real life</span
+                >
                 <span :class="bold5" @click="moveSlider(5)">Warm</span>
                 <span :class="bold4" @click="moveSlider(4)">Slightly warm</span>
                 <span :class="bold3" @click="moveSlider(3)">No feeling</span>
                 <span :class="bold2" @click="moveSlider(2)">Slightly cold</span>
                 <span :class="bold1" @click="moveSlider(1)">Cold</span>
-                <span :class="bold0" @click="moveSlider(0)">Very cold - I never want to speak to this person again</span>
+                <span :class="bold0" @click="moveSlider(0)"
+                  >Very cold - I never want to speak to this person again</span
+                >
               </div>
             </div>
           </v-form>
-          <div v-if="player.rejectedSuggestions.length > 0" class="rejectionExplanation">
+          <div
+            v-if="player.rejectedSuggestions.length > 0"
+            class="rejectionExplanation"
+          >
             <h3>You rejected some reply suggestions</h3>
             <p>For each one, could you explain why you chose to reject them?</p>
-            <div v-for="suggestion in player.rejectedSuggestions" :key="suggestion">
+            <div
+              v-for="suggestion in player.rejectedSuggestions"
+              :key="suggestion"
+            >
               <h3>
                 Why did you reject "{{ suggestion | suggestionIdToName }}"? What
                 suggestion would sound better to you? (required)
               </h3>
-              <v-textarea v-model="rejected[suggestion]" :key="suggestion" label="" auto-grow outlined></v-textarea>
+              <v-textarea
+                v-model="rejected[suggestion]"
+                :key="suggestion"
+                label=""
+                auto-grow
+                outlined
+              ></v-textarea>
             </div>
           </div>
         </div>
@@ -67,8 +105,14 @@
               </v-subheader>
             </v-col>
             <v-col cols="6">
-              <v-select v-model="politics" item-text="label" item-value="value" :items="items_politics" label=""
-                return-object></v-select>
+              <v-select
+                v-model="politics"
+                item-text="label"
+                item-value="value"
+                :items="items_politics"
+                label=""
+                return-object
+              ></v-select>
             </v-col>
           </v-row>
           <v-row>
@@ -78,8 +122,14 @@
               </v-subheader>
             </v-col>
             <v-col cols="6">
-              <v-select v-model="gender" item-text="label" item-value="value" :items="items_gender" label=""
-                return-object></v-select>
+              <v-select
+                v-model="gender"
+                item-text="label"
+                item-value="value"
+                :items="items_gender"
+                label=""
+                return-object
+              ></v-select>
             </v-col>
           </v-row>
           <v-row>
@@ -89,8 +139,14 @@
               </v-subheader>
             </v-col>
             <v-col cols="6">
-              <v-select v-model="age" item-text="label" item-value="value" :items="items_age" label=""
-                return-object></v-select>
+              <v-select
+                v-model="age"
+                item-text="label"
+                item-value="value"
+                :items="items_age"
+                label=""
+                return-object
+              ></v-select>
             </v-col>
           </v-row>
           <v-row>
@@ -100,8 +156,14 @@
               </v-subheader>
             </v-col>
             <v-col cols="6">
-              <v-select v-model="race" item-text="label" item-value="value" :items="items_race" label=""
-                return-object></v-select>
+              <v-select
+                v-model="race"
+                item-text="label"
+                item-value="value"
+                :items="items_race"
+                label=""
+                return-object
+              ></v-select>
             </v-col>
           </v-row>
 
@@ -115,8 +177,14 @@
               </v-subheader>
             </v-col>
             <v-col cols="6">
-              <v-select v-model="education" item-text="label" item-value="value" :items="items_education" label=""
-                return-object></v-select>
+              <v-select
+                v-model="education"
+                item-text="label"
+                item-value="value"
+                :items="items_education"
+                label=""
+                return-object
+              ></v-select>
             </v-col>
           </v-row>
 
@@ -130,15 +198,30 @@
               </v-subheader>
             </v-col>
             <v-col cols="6">
-              <v-select v-model="income" item-text="label" item-value="value" :items="items_income" label=""
-                return-object></v-select>
+              <v-select
+                v-model="income"
+                item-text="label"
+                item-value="value"
+                :items="items_income"
+                label=""
+                return-object
+              ></v-select>
             </v-col>
           </v-row>
         </div>
         <div class="push-10">
-          <v-btn @click="clickBack" :disabled="step < 2" class="mr-2">Back</v-btn>
-          <v-btn @click="clickNext" v-if="step < maxSteps" :disabled="!formValid">Next</v-btn>
-          <v-btn v-else @click="submitSurvey" :disabled="!formValid">Next</v-btn>
+          <v-btn @click="clickBack" :disabled="step < 2" class="mr-2"
+            >Back</v-btn
+          >
+          <v-btn
+            @click="clickNext"
+            v-if="step < maxSteps"
+            :disabled="!formValid"
+            >Next</v-btn
+          >
+          <v-btn v-else @click="submitSurvey" :disabled="!formValid"
+            >Next</v-btn
+          >
         </div>
       </v-col>
       <v-col cols="4">

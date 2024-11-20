@@ -1,4 +1,15 @@
 #!/bin/bash
+
+################################################################################
+# Filename: start.command
+# Author: Elijah Claggett
+# Description: Starts the Breadboard experiment on the server
+#
+# Usage:
+#   ./deployment/start.command
+#
+################################################################################
+
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 cd "$parent_path"
 

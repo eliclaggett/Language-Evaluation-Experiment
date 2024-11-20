@@ -1,4 +1,8 @@
-<!-- Reply Suggestion UI Element -->
+<!--
+Filename: Suggestion.vue
+Author: Elijah Claggett
+Description: Reply Suggestion UI Element
+-->
 <template>
   <div id="suggestion">
     <div class="suggestion-body">
@@ -55,7 +59,7 @@ export default {
         this.$emit('send');
       }
     },
-  }
+  },
 };
 </script>
 <style lang="scss">
@@ -67,14 +71,12 @@ export default {
   position: absolute;
   bottom: 5em;
   border-radius: 1em 1em 0 0;
-  // box-shadow: 0 0 1em rgba(0,0,0,0.15);
   padding: 0em;
   font-size: 0.8em;
   color: #555;
 }
 #suggestion .header {
   font-size: 0.85em;
-  // margin-bottom: 1em;
   display: none;
 }
 #suggestion .header strong {
@@ -89,8 +91,6 @@ export default {
   display: flex;
   width: 100%;
   cursor: initial;
-  // background-color: #f6f6f6;
-  // border-radius: 1px;
   padding: 0em 1.5em;
   margin-bottom: 0;
   transition: background-color 0.2s;
@@ -103,16 +103,12 @@ export default {
   align-self: center;
 }
 #suggestion .suggestion-msg {
-  // border: solid #ddd;
   box-shadow: 0 0 1em rgba(0, 0, 0, 0.05);
   border-width: 0 1px 0 1px;
   display: flex;
   align-items: center;
   padding: 0 1em;
 }
-// #suggestion .suggestion-body:hover {
-//   // background-color: #f2f2f2;
-// }
 #suggestion .footer {
   display: flex;
   justify-content: center;

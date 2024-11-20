@@ -1,8 +1,16 @@
-<!-- Google reCAPTCHA V2 -->
+<!--
+Filename: Recaptcha.vue
+Author: Elijah Claggett
+Description: Check that participants are not robots
+-->
 <template>
   <v-container class="col-sm-6 push-10">
     <v-col align="center">
-      <v-img :src="require(`@/assets/undraw_welcome_cats_thqn.svg`)" width="500" center></v-img>
+      <v-img
+        :src="require(`@/assets/undraw_welcome_cats_thqn.svg`)"
+        width="500"
+        center
+      ></v-img>
       <p class="pt-4 pb-4" v-if="player.platform == 'mturk'">
         Ready to chat? Complete the captcha to start the pre-evaluation.
       </p>

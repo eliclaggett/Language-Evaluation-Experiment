@@ -1,44 +1,61 @@
-<!-- Catch-all for task incompletion cases -->
+<!--
+Filename: Return.vue
+Author: Elijah Claggett
+Description: Catch-all for experiment error cases
+-->
 <template>
   <v-container class="col-sm-6 push-10 text-center center">
-
     <!-- Failed reCAPTCHA -->
     <h3 v-if="player.gameStep === 'failedCaptcha'">
-      <span v-if="player.platform == 'mturk'">Unfortunately, you failed the human verification. Please return the
-        study.</span>
-      <span v-if="player.platform == 'prolific'">Unfortunately, you failed the CAPTCHA. Please return this submission on
-        Prolific by selecting the "stop without completing" button.</span>
+      <span v-if="player.platform == 'mturk'"
+        >Unfortunately, you failed the human verification. Please return the
+        study.</span
+      >
+      <span v-if="player.platform == 'prolific'"
+        >Unfortunately, you failed the CAPTCHA. Please return this submission on
+        Prolific by selecting the "stop without completing" button.</span
+      >
     </h3>
 
     <!-- Failed consent form -->
     <h3 v-if="player.gameStep === 'failedConsent'">
-      <span v-if="player.platform == 'mturk'">We cannot continue without your consent. Please return the study.</span>
-      <span v-if="player.platform == 'prolific'">As you have indicated that you do not consent to participate in this
+      <span v-if="player.platform == 'mturk'"
+        >We cannot continue without your consent. Please return the study.</span
+      >
+      <span v-if="player.platform == 'prolific'"
+        >As you have indicated that you do not consent to participate in this
         study, please return this submission on Prolific by selecting the "stop
-        without completing" button.</span>
+        without completing" button.</span
+      >
     </h3>
 
     <!-- Failed comprehension test -->
     <div v-if="player.gameStep === 'failCheckUnderstanding'">
       <h3>
-        Unfortunately, you answered one of the comprehension questions incorrectly. Please return the study.
+        Unfortunately, you answered one of the comprehension questions
+        incorrectly. Please return the study.
       </h3>
       <p>
-        We understand that accidents happen and we still hope to see you join our future studies!
+        We understand that accidents happen and we still hope to see you join
+        our future studies!
       </p>
     </div>
 
     <!-- We could not assign a suitable conversation partner -->
     <h3 v-else-if="player.gameStep === 'leftover'">
-      <span v-if="player.platform == 'mturk'">We recruited too many participants. Please submit the study to be
-        compensated for your time. We hope to see you again.</span>
+      <span v-if="player.platform == 'mturk'"
+        >We recruited too many participants. Please submit the study to be
+        compensated for your time. We hope to see you again.</span
+      >
       <span v-if="player.platform == 'prolific'">Study Completed</span>
     </h3>
     <p v-if="player.gameStep == 'leftover' && player.platform == 'prolific'">
       Thank you for your patience. We were unable to continue to the paired
       communication step of this study. Please submit the Completion Code below
       when you are ready:<br />
-      <strong class="completioncode">{{ player.prolificCompletionCodes['task1'] }}</strong>
+      <strong class="completioncode">{{
+        player.prolificCompletionCodes['task1']
+      }}</strong>
     </p>
 
     <!-- Someone pressed the "report" button -->
@@ -54,35 +71,51 @@
     </div>
 
     <!-- Failed to press the "ready" button in time -->
-    <h3 v-else-if="player.gameStep === 'notReady' && player.platform == 'prolific'
-      ">
+    <h3
+      v-else-if="
+        player.gameStep === 'notReady' && player.platform == 'prolific'
+      "
+    >
       Study Completed
     </h3>
     <p v-if="player.gameStep === 'notReady' && player.platform == 'prolific'">
-      Unfortunately, the main task started before you were able to complete the practice session and survey. Please submit the
-      Please submit the completion code below when you are ready:<br />
-      <strong class="completioncode">{{ player.prolificCompletionCodes['task1'] }}</strong>
+      Unfortunately, the main task started before you were able to complete the
+      practice session and survey. Please submit the Please submit the
+      completion code below when you are ready:<br />
+      <strong class="completioncode">{{
+        player.prolificCompletionCodes['task1']
+      }}</strong>
     </p>
-    <h3 v-if="player.gameStep === 'notReady' &&
-      !player.groupingComplete &&
-      player.platform == 'mturk'
-      ">
-      Unfortunately, the task started before you were able to complete the practice session and survey. Please submit the
-      study to receive the base pay!
+    <h3
+      v-if="
+        player.gameStep === 'notReady' &&
+        !player.groupingComplete &&
+        player.platform == 'mturk'
+      "
+    >
+      Unfortunately, the task started before you were able to complete the
+      practice session and survey. Please submit the study to receive the base
+      pay!
     </h3>
-    <h3 v-else-if="player.gameStep === 'notReady' &&
-      player.groupingComplete &&
-      player.platform == 'mturk'
-      ">
-      Unfortunately, the task started before you were able to complete the practice session and survey. Please submit the
-      study to receive the base pay!
+    <h3
+      v-else-if="
+        player.gameStep === 'notReady' &&
+        player.groupingComplete &&
+        player.platform == 'mturk'
+      "
+    >
+      Unfortunately, the task started before you were able to complete the
+      practice session and survey. Please submit the study to receive the base
+      pay!
     </h3>
 
     <!-- The participant joined too late -->
     <h3 v-else-if="player.gameStep === 'tooLate' && player.platform == 'mturk'">
       This task has already started. Please return the study
     </h3>
-    <h3 v-else-if="player.gameStep === 'tooLate' && player.platform == 'prolific'">
+    <h3
+      v-else-if="player.gameStep === 'tooLate' && player.platform == 'prolific'"
+    >
       Unfortunately, this time-sensitive study has expired.<br />Please return
       this submission on Prolific by selecting the 'stop without completing'
       button.
@@ -95,15 +128,21 @@
     <h3 v-if="player.gameStep === 'failedEvaluation'">
       Unfortunately, we are unable to continue to the study.
     </h3>
-    <p v-if="player.gameStep === 'failedEvaluation' && player.samplingMode != 'mcq'
-      ">
-      We appreciate you accepting our study, but our chatbot found unusual answers
-      to the pre-evaluation questions. Please return this study. The qualification
-      criteria for this task is unique so please continue to join our other studies
-      in the future.
+    <p
+      v-if="
+        player.gameStep === 'failedEvaluation' && player.samplingMode != 'mcq'
+      "
+    >
+      We appreciate you accepting our study, but our chatbot found unusual
+      answers to the pre-evaluation questions. Please return this study. The
+      qualification criteria for this task is unique so please continue to join
+      our other studies in the future.
     </p>
-    <p v-if="player.gameStep === 'failedEvaluation' && player.samplingMode == 'mcq'
-      ">
+    <p
+      v-if="
+        player.gameStep === 'failedEvaluation' && player.samplingMode == 'mcq'
+      "
+    >
       We appreciate you accepting our study, but your answers to one or more of
       the pre-evaluation questions were incorrect. Please return this study. The
       qualification criteria for this task is unique so please continue to join
@@ -118,17 +157,27 @@
     </p>
 
     <!-- Show a submit button if the participant should be paid -->
-    <div v-if="player.submit && player.platform == 'mturk'" v-html="player.submit" class="pt-6 pb-6 text-center center">
-    </div>
+    <div
+      v-if="player.submit && player.platform == 'mturk'"
+      v-html="player.submit"
+      class="pt-6 pb-6 text-center center"
+    ></div>
 
     <!-- Encourage participants to contact us -->
-    <p v-if="player.gameStep !== 'failedConsent' &&
-      player.gameStep !== 'failedCaptcha' &&
-      player.gameStep !== 'notReady' &&
-      player.gameStep !== 'tooLate'
-      " class="pt-4 selectable">
-      Please tell us how to improve this task! Contact us at cmu.hcii.slab<span class="block-spam"
-        aria-hidden="true">spam</span>@gmail.com
+    <p
+      v-if="
+        player.gameStep !== 'failedConsent' &&
+        player.gameStep !== 'failedCaptcha' &&
+        player.gameStep !== 'notReady' &&
+        player.gameStep !== 'tooLate'
+      "
+      class="pt-4 selectable"
+    >
+      Please tell us how to improve this task! Contact us at cmu.hcii.slab<span
+        class="block-spam"
+        aria-hidden="true"
+        >spam</span
+      >@gmail.com
     </p>
   </v-container>
 </template>
@@ -137,7 +186,6 @@
 export default {
   name: 'ReturnStep',
   mounted() {
-
     // Sometimes button styles don't load automatically
     document.querySelectorAll('button').forEach((el) => {
       el.className =

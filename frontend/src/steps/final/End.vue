@@ -1,8 +1,14 @@
-<!-- Finish! Explain the final payment -->
+<!--
+Filename: End.vue
+Author: Elijah Claggett
+Description: Final page of the experiment, explaining participants payment
+-->
 <template>
   <v-col class="push-10 center" xl="3" lg="4" md="6" sm="8">
     <v-col class="center" xl="6" lg="8" md="10" sm="6">
-      <v-img :src="require(`@/assets/undraw_happy_announcement_re_tsm0.svg`)"></v-img>
+      <v-img
+        :src="require(`@/assets/undraw_happy_announcement_re_tsm0.svg`)"
+      ></v-img>
     </v-col>
     <h1 class="text-center">Thank you for participating!</h1>
     <div v-if="player.bonusOption == 2 && player.partnerBonusOption == -1">
@@ -54,14 +60,23 @@
       </p>
       <div v-if="player.platform == 'mturk'">
         <p>Please click "Submit Study" when you are ready.</p>
-        <div v-html="player.submit" v-if="player.submit" class="submitHit text-center mt-6"></div>
+        <div
+          v-html="player.submit"
+          v-if="player.submit"
+          class="submitHit text-center mt-6"
+        ></div>
       </div>
       <div v-if="player.platform == 'prolific'">
         <p>
           Please submit this Completion Code when you are ready:<br />
-          <strong class="completioncode">{{ player.prolificCompletionCodes[player.whichCompletionCode] }}</strong><br />
-          <b>We will pay the difference between your total earnings and the base
-          pay separately after you submit this code.</b>
+          <strong class="completioncode">{{
+            player.prolificCompletionCodes[player.whichCompletionCode]
+          }}</strong
+          ><br />
+          <b
+            >We will pay the difference between your total earnings and the base
+            pay separately after you submit this code.</b
+          >
         </p>
       </div>
     </div>
@@ -75,15 +90,26 @@
       <br /><br />
     </v-form>
     <p class="mt-4">
-      For other comments or questions, please contact us at cmu.hcii.slab<span class="block-spam"
-        aria-hidden="true">spam</span>@gmail.com
+      For other comments or questions, please contact us at cmu.hcii.slab<span
+        class="block-spam"
+        aria-hidden="true"
+        >spam</span
+      >@gmail.com
     </p>
     <p class="credits">
       Image Credits:<br />
-      <a href="https://www.flaticon.com/free-icons/fist-bump" target="_blank" title="fist bump icons">Fist bump icons
-        created by Freepik - Flaticon</a><br />
-      <a href="https://www.flaticon.com/free-icons/shake-hands" target="_blank" title="shake hands icons">Shake hands
-        icons created by Flat Icons - Flaticon</a>
+      <a
+        href="https://www.flaticon.com/free-icons/fist-bump"
+        target="_blank"
+        title="fist bump icons"
+        >Fist bump icons created by Freepik - Flaticon</a
+      ><br />
+      <a
+        href="https://www.flaticon.com/free-icons/shake-hands"
+        target="_blank"
+        title="shake hands icons"
+        >Shake hands icons created by Flat Icons - Flaticon</a
+      >
     </p>
   </v-col>
 </template>
@@ -92,11 +118,9 @@
 /* global Breadboard */
 
 export default {
-
   name: 'EndStep',
 
   mounted() {
-
     // For some reason, the button styles don't always load on their own
     document.querySelectorAll('button').forEach((el) => {
       el.className =

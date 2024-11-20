@@ -1,17 +1,41 @@
-<!-- Chat UI Element -->
+<!--
+Filename: ChatWindow.vue
+Author: Elijah Claggett
+Description: Chatbox UI Element
+-->
 <template>
-  <Chat :participants="chatParticipants" :myself="myself" :messages="messages" @onMessageSubmit="onMessageSubmit"
-    @onType="onType" :placeholder="placeholder" :colors="colors" :profile-picture-config="profilePictureConfig"
-    :borderStyle="borderStyle" :hideCloseButton="hideCloseButton" :send-images="false" :submitIconSize="submitIconSize"
-    :scrollBottom="{ messageSent: false, messageReceived: false }" class="elevation-3">
+  <Chat
+    :participants="chatParticipants"
+    :myself="myself"
+    :messages="messages"
+    @onMessageSubmit="onMessageSubmit"
+    @onType="onType"
+    :placeholder="placeholder"
+    :colors="colors"
+    :profile-picture-config="profilePictureConfig"
+    :borderStyle="borderStyle"
+    :hideCloseButton="hideCloseButton"
+    :send-images="false"
+    :submitIconSize="submitIconSize"
+    :scrollBottom="{ messageSent: false, messageReceived: false }"
+    class="elevation-3"
+  >
     <template v-slot:footer>
       <div id="new-msg-alert" @click="scrollToBottom" class="hide-alert">
         New Message&nbsp;&darr;
       </div>
       <span id="character-counter">1 / 140</span>
       <v-slide-y-reverse-transition origin="bottom center 0">
-        <Suggestion :player="player" :popup="true" v-if="showSuggestion" :msg="nlp.suggestion" :id="nlp.id"
-          @edit="editSuggestion" @cancel="cancelSuggestion" @send="sendSuggestion" />
+        <Suggestion
+          :player="player"
+          :popup="true"
+          v-if="showSuggestion"
+          :msg="nlp.suggestion"
+          :id="nlp.id"
+          @edit="editSuggestion"
+          @cancel="cancelSuggestion"
+          @send="sendSuggestion"
+        />
       </v-slide-y-reverse-transition>
     </template>
   </Chat>
@@ -28,7 +52,7 @@ export default {
 
   components: {
     Chat,
-    Suggestion
+    Suggestion,
   },
   props: {
     player: Object,
@@ -38,7 +62,6 @@ export default {
   },
 
   data: () => ({
-
     // Related to reply suggestions
     showSuggestion: false,
     waitingForPreReq: false,
@@ -115,7 +138,6 @@ export default {
     },
 
     onMessageSubmit: function (message) {
-
       // Reset character counter
       document.querySelector('#character-counter').innerText = '0 / 140';
 
@@ -180,7 +202,7 @@ export default {
         name: 'Me',
         id: this.player.chatId,
       };
-    }
+    },
   },
   watch: {
     player(val) {
@@ -270,8 +292,8 @@ export default {
         } else {
           let suggestionDelay =
             val.id == 'greeting0' ||
-              val.id == 'greeting1' ||
-              val.id == 'greeting'
+            val.id == 'greeting1' ||
+            val.id == 'greeting'
               ? 15000
               : 1000;
 
@@ -307,12 +329,10 @@ export default {
     },
   },
   mounted() {
-
     // Custom UI listing all chat participants
     let messageContainer = document.querySelector('.container-message-display');
     let joinMsgs = '';
     for (let participant of this.participants) {
-      // let groupName = participant.group !== undefined ? '(' + participant.groupName + ') ' : '';
       let groupName = '';
       let participantName = participant.name;
       if (participantName == 'Me') {
@@ -442,7 +462,7 @@ export default {
   display: none;
 }
 
-.quick-chat-container .container-message-display .message-text>p {
+.quick-chat-container .container-message-display .message-text > p {
   font-size: 0.95rem;
   line-height: 1.5em;
 }
@@ -502,7 +522,6 @@ export default {
   padding: 3px;
   margin: 3px;
   position: relative;
-  /* display: none; * Disabled for now */
 }
 
 .suggestions::before {

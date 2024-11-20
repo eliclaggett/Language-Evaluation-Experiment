@@ -1,23 +1,38 @@
-<!-- Chatbot/MCQ Pre-evaluation -->
-<!-- Four pre-evaluation (sampling) modes: chatbot, chatbot2, slor, mcq -->
+<!--
+Filename: PreEval.vue
+Author: Elijah Claggett
+Description: Chatbot/MCQ Pre-evaluation of participant quality (Four pre-evaluation/sampling modes: chatbot, chatbot2, slor, mcq)
+-->
 <template>
   <v-col class="pt-6 center" cols="10" md="6">
     <h1 class="text-center">Pre-Evaluation</h1>
-    <div v-if="player.samplingMode == 'chatbot' ||
-      player.samplingMode == 'chatbot2' ||
-      player.samplingMode == 'slor'
-      ">
+    <div
+      v-if="
+        player.samplingMode == 'chatbot' ||
+        player.samplingMode == 'chatbot2' ||
+        player.samplingMode == 'slor'
+      "
+    >
       <p class="text-center">
         Please complete this practice session with a chatbot partner. You will
         automatically move to the next step once you send enough messages.
       </p>
       <div>
-        <v-alert outlined type="error" :class="allcaps">Please do not type in all caps.</v-alert>
-        <v-alert type="success" id="verificationMsg" v-if="false">Submitted successfully! Please wait while we verify your
-          answer</v-alert>
+        <v-alert outlined type="error" :class="allcaps"
+          >Please do not type in all caps.</v-alert
+        >
+        <v-alert type="success" id="verificationMsg" v-if="false"
+          >Submitted successfully! Please wait while we verify your
+          answer</v-alert
+        >
         <v-form id="verificationForm">
-          <ChatWindow :player="player" :nlp="nlp" @onMsgSend="handleMsgSend" :participants="participants"
-            msgSource="messagesEvaluation" />
+          <ChatWindow
+            :player="player"
+            :nlp="nlp"
+            @onMsgSend="handleMsgSend"
+            :participants="participants"
+            msgSource="messagesEvaluation"
+          />
         </v-form>
       </div>
     </div>
@@ -29,11 +44,21 @@
         there are no instructions to debate.
       </p>
       <div id="chat-log" v-html="messageLog"></div>
-      <v-radio-group v-for="q in questions" v-bind:key="q.key" :label="q.label" v-model="q.model">
+      <v-radio-group
+        v-for="q in questions"
+        v-bind:key="q.key"
+        :label="q.label"
+        v-model="q.model"
+      >
         <template v-slot:label>
           <h3>{{ q.label }}</h3>
         </template>
-        <v-radio v-bind:key="q.key + '-' + o.value" v-for="o in q.options" :label="o.label" :value="o.value"></v-radio>
+        <v-radio
+          v-bind:key="q.key + '-' + o.value"
+          v-for="o in q.options"
+          :label="o.label"
+          :value="o.value"
+        ></v-radio>
       </v-radio-group>
       <div class="text-center">
         <v-btn @click="clickDone">Submit Answers</v-btn>

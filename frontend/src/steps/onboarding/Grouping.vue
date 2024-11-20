@@ -1,9 +1,16 @@
-<!-- Initial survey for determining a participant's stance toward various topics -->
+<!--
+Filename: Grouping.vue
+Author: Elijah Claggett
+Description: Initial survey for determining a participant's stance toward various topics
+-->
 <template>
   <div>
     <v-container v-if="player.groupingComplete === false">
       <v-row class="pa-16">
-        <h1 class="center text-center" v-if="player.groupingType === 'artificial'">
+        <h1
+          class="center text-center"
+          v-if="player.groupingType === 'artificial'"
+        >
           Click on the painting you like better ({{
             slideIdx + 1
           }}&nbsp;/&nbsp;{{ player.imagePairs.length }})
@@ -16,7 +23,10 @@
       </v-row>
       <v-row>
         <v-col cols="12" class="center">
-          <LikertQuestion :prompt="window.texts.likertQuestions[slide]" @chooseItem="chooseItem($event)" />
+          <LikertQuestion
+            :prompt="window.texts.likertQuestions[slide]"
+            @chooseItem="chooseItem($event)"
+          />
         </v-col>
       </v-row>
     </v-container>
@@ -65,8 +75,8 @@ export default {
       let ocRect = withinGroups
         ? document.querySelector('.ingroup .c1').getBoundingClientRect()
         : document
-          .querySelector('.outgroup .center-circle')
-          .getBoundingClientRect();
+            .querySelector('.outgroup .center-circle')
+            .getBoundingClientRect();
 
       let icRect = document
         .querySelector('.ingroup .center-circle')
@@ -96,7 +106,7 @@ export default {
   data() {
     return {
       slideIdx: 0,
-      groupingComplete: false
+      groupingComplete: false,
     };
   },
   computed: {
@@ -105,7 +115,7 @@ export default {
     },
     order() {
       return this.player.groupingQuestionOrderRandomized[this.slideIdx];
-    }
+    },
   },
   watch: {
     player(val) {
@@ -171,7 +181,6 @@ export default {
 }
 
 .group0 .center-circle {
-  /* background: url('../assets/group0.png'); */
   background-size: cover;
   background-position: center;
 }
@@ -181,7 +190,6 @@ export default {
 }
 
 .group1 .center-circle {
-  /* background: url('../assets/group1.png'); */
   background-size: cover;
   background-position: center;
 }
