@@ -1,32 +1,58 @@
-# Algorithmic Pairing for Better Conversations
+<h1 align="center">
+  <br>
+  <img src="https://raw.githubusercontent.com/eliclaggett/Language-Evaluation-Experiment/refs/heads/main/assets/lang-eval-1.svg" width="300"></a>
+  <br>
+  Algorithmic Pairing for Better Conversations
+</h1>
 
-Platform for running interactive multi-player social experiments with strategic pairing based on automatically evaluated interpersonal communication style.
+<h4 align="center">A large-scale experiment evaluating human prosociality.</h4>
 
-The provided code is a companion to this paper:
+<p align="center">
+  <a href="#research-paper">Research Paper</a> •
+  <a href="#how-to-use">How to Use</a> •
+  <a href="#download">Download</a> •
+  <a href="#authors">Authors</a> •
+  <a href="#license">License</a>
+</p>
 
-**Claggett, E.**, Shirado, H. "Making Pairs That Cooperate: AI Evaluation of Trust in Human Conversations" *Proceedings of the 2025 ACM Conference on Computer Supported Cooperative Work and Social Computing.*
+<!-- ![screenshot]() -->
 
-The paper abstract is presented below:
-> Human biases toward interacting with similar individuals contribute to the formation of ideological echo chambers and erode trust in others. However, facilitating constructive discussions can potentially counteract these biases and build trust, even when a consensus is not reached. This work explores such potential by developing an algorithmic assessment of linguistic features that promote trust and examining the impact of strategically pairing individuals based on this assessment. Guided by the conversational grounding theory, we first analyze the linguistic features of 123 interpersonal dyadic discussions (2,809 messages) on our online chat system and develop a classifier to identify individuals who use the communication style that promotes trust development. We then conduct a randomized controlled experiment with 530 human subjects in 265 pairs to measure the effect of assigning discussion partners based on the classifier’s assessment of participants' prior interactions with a chatbot. Our results show that algorithmically assigned pairs exhibit higher trust in their conversation partners than random pairs, irrespective of opinion similarity. We discuss the implications of our strategic pairing approach for enhancing collaboration and trust in various social settings.
+## Research Paper
 
+> **Note:**
+> This repository is the companion code to our research paper appearing in CSCW'25. We do not recommend deploying this code for general use.
 
-### Prerequisites
+Guided by the conversational grounding theory, we analyzed the linguistic features of 123 interpersonal dyadic discussions (2,809 messages) using this online chat system and developed a classifier to identify individuals who use the communication style that promotes trust development. We then conducted a randomized controlled experiment with 530 human subjects in 265 pairs to measure the effect of assigning discussion partners based on the classifier’s assessment of participants' prior interactions with a chatbot. **Our results show that algorithmically assigned pairs exhibit significantly higher trust in their conversation partners than random pairs, irrespective of opinion similarity.**
 
-- Python
-- Java
-- Breadboard (breadboard.yale.edu)
-- NGINX
+For more details, please see our full paper:
 
-### Installation
+**Claggett, E.**, Shirado, H. "Making Pairs That Cooperate: AI Evaluation of Trust in Human Conversations" _Proceedings of the 2025 ACM Conference on Computer Supported Cooperative Work and Social Computing._
 
-Clone the repository.
+## How to Use
 
-### Testing
+This experiment was deployed using Yale's [Breadboard](https://breadboard.yale.edu) platform for studying human social behavior online. Installing this software is a prerequisite to running this code.
 
-Run start.sh
+### Installation Steps
 
-### Running
+1. Install Python 3, Pyenv, and Pyenv-Virtualenv
+2. Install Breadboard
+3. (optional) Install NGINX to run this experiment on Prolific
 
-Run run.sh
+Finally, clone this repository and run the `start.sh` script to get started.
 
-You will get an error that the shards can't be loaded. That's okay.
+## Download
+
+There is no single executable for this web application, so please follow installation steps above and have fun!
+
+## Authors
+
+<p align="center">
+  <span>
+    <img src="/img1.png" width="100" />
+    <strong>Eli Claggett</strong>
+  </span>
+</p>
+
+## License
+
+MIT
